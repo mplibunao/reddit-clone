@@ -8,6 +8,7 @@ help:
 exec := docker-compose exec
 run := docker-compose run
 logs := docker-compose logs --tail=$(tail)
+docker-up := docker-compose up
 
 # Services
 node_server := web
@@ -20,7 +21,10 @@ args := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 # Targets
 
 up: ## Runs all services
-	docker-compose up
+	$(docker-up)
+
+up\:build: ## Builds containers then runs it
+	$(docker-up) --build 
 
 
 # Node server
@@ -30,10 +34,21 @@ node: ## Runs node server in dev mode
 node\:logs: ## Shows node server logs
 	$(logs) $(node_server)
 
+node\:shell: ## Run shell
+	$(run) $(node_server) sh
+
+node\:install: ## Add new dependencies
+	$(run) $(node_server) yarn add $(args)
+
+node\:install\:dev: ## Add new dev dependencies
+	$(run) $(node_server) yarn add -D $(args)
 
 # DB 
-psql: ## Login into psql
+psql: ## Logs into psql
 	$(exec) $(postgres) psql -U postgres
+
+db: ## Run postgres
+	$(run) $(postgres)
 
 db\:logs: ## Shows postgres logs
 	$(logs) $(postgres)
