@@ -4,14 +4,14 @@ import { v4 } from "uuid";
 @Entity()
 export class Post extends BaseEntity<Post, "id"> {
   @PrimaryKey({ type: "uuid" })
-  public id: string = v4();
+  id: string = v4();
 
-  @Property()
+  @Property({ type: "text" })
   title!: string;
 
-  @Property()
+  @Property({ type: "date" })
   createdAt: Date = new Date();
 
-  @Property({ onUpdate: () => new Date() })
+  @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 }

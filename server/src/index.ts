@@ -6,12 +6,15 @@ import config from "./mikro-orm.config";
 const main = async () => {
   //console.log("config", config); // eslint-disable-line no-console
   const orm = await MikroORM.init(config);
+
+  orm.getMigrator().up();
   console.log("connected ---------------");
 
   //const post = orm.em.create(Post, { title: "my first post" });
   //await orm.em.persistAndFlush(post);
-  //console.log("---sql2----");
-  //await orm.em.nativeInsert(Post, { title: "my first post 2" });
+
+  //const posts = await orm.em.find(Post, {});
+  //console.log("posts", posts); // eslint-disable-line no-console
 };
 
 main().catch((err) => {
