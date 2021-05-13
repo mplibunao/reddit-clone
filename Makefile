@@ -4,24 +4,27 @@ help:
 	@grep -E '^[a-zA-Z_-].*?: .*?## .*$$' Makefile | sed 's#\\:#:#g' | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m  %-20s\033[0m %s\n", $$1, $$2}'
 	@echo
 
+# Variables 
+tail ?= all
+args := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+
 # Commands
 exec := docker-compose exec
+rm := docker-compose rm -fs
 run := docker-compose run
 logs := docker-compose logs --tail=$(tail)
 docker-up := docker-compose up
+migration := yarn run mikro-orm migration
 
 # Services
 node_server := web
 postgres := postgres
 
-# Variables 
-tail ?= all
-args := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
 # Targets
 
 up: ## Runs all services
-	$(docker-up)
+	$(docker-up) && $(rm)
 
 up\:build: ## Builds containers then runs it
 	$(docker-up) --build 
@@ -42,6 +45,10 @@ node\:install: ## Add new dependencies
 
 node\:install\:dev: ## Add new dev dependencies
 	$(run) $(node_server) yarn add -D $(args)
+
+migrate\:create: ## Creates new migration
+	$(run) $(node_server) $(migration):create
+
 
 # DB 
 psql: ## Logs into psql

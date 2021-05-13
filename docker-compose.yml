@@ -9,18 +9,17 @@ services:
       - "4000:4000"
     depends_on:
       - postgres
-    environment:
-      - NODE_ENV=development
-
+    env_file:
+      - .env
   postgres:
-    image: postgres:11
+    image: postgres:13.2
     restart: always
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
 
 volumes:
   db_data:

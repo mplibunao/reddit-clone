@@ -1,10 +1,10 @@
-import { Entity, Property, PrimaryKey } from "@mikro-orm/core";
+import { Entity, Property, PrimaryKey, BaseEntity } from "@mikro-orm/core";
 import { v4 } from "uuid";
 
 @Entity()
-export class Book {
-  @PrimaryKey()
-  uuid: string = v4();
+export class Post extends BaseEntity<Post, "id"> {
+  @PrimaryKey({ type: "uuid" })
+  public id: string = v4();
 
   @Property()
   title!: string;

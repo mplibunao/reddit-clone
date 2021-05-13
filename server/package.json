@@ -5,7 +5,9 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\"",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start2": "ts-node src/index.ts",
+    "dev2": "nodemon --exec ts-node src/index.ts"
   },
   "license": "MIT",
   "devDependencies": {
@@ -23,5 +25,12 @@
     "@mikro-orm/postgresql": "^4.5.4",
     "pg": "^8.6.0",
     "uuid": "^8.3.2"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
   }
 }
