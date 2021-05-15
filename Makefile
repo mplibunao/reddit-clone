@@ -24,10 +24,13 @@ postgres := postgres
 # Targets
 
 up: ## Runs all services
-	$(docker-up) && $(rm)
+	$(docker-up)
 
 up\:build: ## Builds containers then runs it
 	$(docker-up) --build 
+
+rm: ## removes containers
+	$(rm)
 
 
 # Node server
