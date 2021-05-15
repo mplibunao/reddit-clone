@@ -25,7 +25,7 @@ node := $(run) $(node_server)
 
 # Targets
 
-up: ## Runs all services
+up: node\:yarn ## Runs all services
 	$(docker-up)
 
 up\:build: ## Builds containers then runs it
@@ -39,7 +39,7 @@ rm: ## removes containers
 node\:dev: ## Runs node server in dev mode
 	$(node) yarn dev
 
-node\:yarn ## Install packages
+node\:yarn: ## Install packages
 	$(node) yarn
 
 node\:logs: ## Shows node server logs
