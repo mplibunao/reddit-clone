@@ -11,7 +11,7 @@ args := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 # Commands
 exec := docker-compose exec
 rm := docker-compose rm -fs
-run := docker-compose run
+run := docker-compose run --rm
 logs := docker-compose logs --tail=$(tail)
 docker-up := docker-compose up
 migration := yarn run mikro-orm migration
