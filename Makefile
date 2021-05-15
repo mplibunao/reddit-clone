@@ -20,6 +20,8 @@ migration := yarn run mikro-orm migration
 node_server := web
 postgres := postgres
 
+# aliases
+node := $(run) $(node_server)
 
 # Targets
 
@@ -34,23 +36,26 @@ rm: ## removes containers
 
 
 # Node server
-node: ## Runs node server in dev mode
-	$(run) $(node_server) yarn dev
+node\:dev: ## Runs node server in dev mode
+	$(node) yarn dev
+
+node\:yarn ## Install packages
+	$(node) yarn
 
 node\:logs: ## Shows node server logs
 	$(logs) $(node_server)
 
 node\:shell: ## Run shell
-	$(run) $(node_server) sh
+	$(node) sh
 
-node\:install: ## Add new dependencies
-	$(run) $(node_server) yarn add $(args)
+node\:i: ## Add new dependencies
+	$(node) yarn add $(args)
 
-node\:install\:dev: ## Add new dev dependencies
-	$(run) $(node_server) yarn add -D $(args)
+node\:i\:dev: ## Add new dev dependencies
+	$(node) yarn add -D $(args)
 
 migrate\:create: ## Creates new migration
-	$(run) $(node_server) $(migration):create
+	$(node) $(migration):create
 
 
 # DB 
