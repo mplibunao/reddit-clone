@@ -9,7 +9,7 @@ $(shell chmod +x ./run.sh)
 
 # Variables 
 TAIL ?= all
-args := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
 # Commands
 exec := docker-compose exec
@@ -17,6 +17,12 @@ run := @./run.sh run
 logs := docker-compose logs --tail=$(TAIL)
 docker.up := @./run.sh up
 migration := yarn run mikro-orm migration
+yarn.install := yarn add $(ARGS)
+yarn.install.dev := yarn add -D $(ARGS)
+yarn.prettier.check := yarn prettier:check
+yarn.prettier.fix := yarn prettier:fix
+yarn.lint.check := yarn lint:check
+yarn.lint.fix := yarn lint:fix
 
 # Services
 node_server := web
@@ -47,10 +53,22 @@ node.shell: ## Run shell
 	$(node) sh
 
 node.install: ## Add new dependencies
-	$(node) yarn add $(args)
+	$(node) $(yarn.install)
 
 node.install.dev: ## Add new dev dependencies
-	$(node) yarn add -D $(args)
+	$(node) $(yarn.install.dev)
+
+node.prettier: ## Checks for formatting errors
+	$(node) $(yarn.prettier.check)
+
+node.prettier.fix: ## Fixes formatting errors
+	$(node) $(yarn.prettier.fix)
+
+node.lint: ## Check for eslint errors
+	$(node) $(yarn.lint.check)
+
+node.lint.fix: ## Fixes eslint errors
+	$(node) $(yarn.lint.fix)
 
 migrate.create: ## Creates new migration
 	$(node) $(migration):create
