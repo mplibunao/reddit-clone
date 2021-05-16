@@ -23,6 +23,8 @@ yarn.prettier.check := yarn prettier:check
 yarn.prettier.fix := yarn prettier:fix
 yarn.lint.check := yarn lint:check
 yarn.lint.fix := yarn lint:fix
+yarn.audit := yarn audit
+yarn.update := yarn upgrade-interactive --latest
 
 # Services
 node_server := web
@@ -69,6 +71,12 @@ node.lint: ## Check for eslint errors
 
 node.lint.fix: ## Fixes eslint errors
 	$(node) $(yarn.lint.fix)
+
+node.audit: ## Checks for known security issues with installed packages
+	$(node) $(yarn.audit)
+
+node.update: ## Upgrade packages interactively
+	$(node) $(yarn.update)
 
 migrate.create: ## Creates new migration
 	$(node) $(migration):create
