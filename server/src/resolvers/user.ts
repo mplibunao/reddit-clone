@@ -1,15 +1,7 @@
-import { User } from 'src/entities'
-import { MyContext } from 'src/types'
-import {
-  Arg,
-  Ctx,
-  Field,
-  InputType,
-  Mutation,
-  Query,
-  Resolver,
-} from 'type-graphql'
+import { Arg, Ctx, Field, InputType, Mutation, Resolver } from 'type-graphql'
 import argon2 from 'argon2'
+import { User } from '../entities'
+import { MyContext } from '../types'
 
 @InputType()
 class UsernamePasswordInput {

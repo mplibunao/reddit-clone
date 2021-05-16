@@ -16,7 +16,7 @@ exec := docker-compose exec
 run := @./run.sh run
 logs := docker-compose logs --tail=$(TAIL)
 docker.up := @./run.sh up
-migration := yarn run mikro-orm migration
+migration := yarn run mikro-orm
 yarn.install := yarn add $(ARGS)
 yarn.install.dev := yarn add -D $(ARGS)
 yarn.prettier.check := yarn prettier:check
@@ -25,6 +25,7 @@ yarn.lint.check := yarn lint:check
 yarn.lint.fix := yarn lint:fix
 yarn.audit := yarn audit
 yarn.update := yarn upgrade-interactive --latest
+yarn.clean := yarn run clean
 
 # Services
 node_server := web
@@ -32,6 +33,7 @@ postgres := postgres
 
 # aliases
 node := $(run) $(node_server)
+db := $(run) $(postgres)
 
 # Targets
 
@@ -42,8 +44,8 @@ up.build: ## Builds containers then runs it
 	$(docker.up) --build 
 
 # Node server
-node.dev: node.yarn migrate.create ## Runs node server in dev mode
-	$(node) yarn dev
+dev: node.yarn migrate.create ## Runs node server in dev mode
+	$(node) yarn dev2
 
 node.yarn: ## Install packages
 	$(node) yarn
@@ -78,16 +80,29 @@ node.audit: ## Checks for known security issues with installed packages
 node.update: ## Upgrade packages interactively
 	$(node) $(yarn.update)
 
+node.clean: ## Clean dist directory
+	$(node) $(yarn.clean)
+
 migrate.create: ## Creates new migration
-	$(node) $(migration):create
+	$(node) $(migration) migration:create
+
+migrate.reset: ## Reset db
+	$(node) $(migration) migration:down --to 0
+
+migrate.drop: ## Drop schema
+	$(node) $(migration) schema:drop --drop-db --dump --drop-migrations-table
+	
 
 
 # DB 
-psql: ## Logs into psql
+psql: ## Logs into psql using docker exec
 	$(exec) $(postgres) psql -U postgres
 
-db: ## Run postgres
-	$(run) $(postgres)
+db.start: ## Run postgres
+	$(db)
 
+db.psql: ## Logs into psql using docker run
+	$(db) psql -U postgres
+	
 db.logs: ## Shows postgres logs
 	$(logs) $(postgres)
