@@ -21,6 +21,12 @@ function up {
   exit $exit_code
 }
 
+function cmd {
+  # run docker exec
+  echo "docker-compose exec $@"
+  docker-compose exec ${@}
+}
+
 
 function help {
   printf "%s <task> [args]\n\nTasks:\n" "${0}"

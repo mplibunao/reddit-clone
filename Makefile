@@ -43,6 +43,10 @@ up: node.yarn migrate.create ## Runs all services
 up.build: ## Builds containers then runs it
 	$(docker.up) --build 
 
+cmd: ## Run commands on a running container using bash
+	@echo "Run ./run.sh cmd <container-name> <commands>"
+
+
 # Node server
 dev: node.yarn migrate.create ## Runs node server in dev mode
 	$(node) yarn dev
@@ -93,13 +97,11 @@ migrate.drop: ## Drop schema
 	$(node) $(migration) schema:drop --drop-db --dump --drop-migrations-table
 	
 
-
 # DB 
 psql: ## Logs into psql using docker exec
 	$(exec) $(postgres) psql -U postgres
 
-db.start: ## Run postgres
-	$(db)
+db.cmd: ## Run 
 
 db.psql: ## Logs into psql using docker run
 	$(db) psql -U postgres
