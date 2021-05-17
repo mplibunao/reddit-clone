@@ -13,9 +13,9 @@ ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
 # Commands
 exec := docker-compose exec
-run := @./run.sh run
+run := ./run.sh run
 logs := docker-compose logs --tail=$(TAIL)
-docker.up := @./run.sh up
+docker.up := ./run.sh up
 migration := yarn run mikro-orm
 yarn.install := yarn add $(ARGS)
 yarn.install.dev := yarn add -D $(ARGS)
@@ -45,7 +45,7 @@ up.build: ## Builds containers then runs it
 
 # Node server
 dev: node.yarn migrate.create ## Runs node server in dev mode
-	$(node) yarn dev2
+	$(node) yarn dev
 
 node.yarn: ## Install packages
 	$(node) yarn

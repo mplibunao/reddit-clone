@@ -3,8 +3,8 @@
 
 function run {
   # run container using docker run then docker-compose down upon exiting
-  echo "docker-compose run --rm $@"
-  docker-compose run --rm "$@"
+  echo "docker-compose run --rm --service-ports $@"
+  docker-compose run --rm --service-ports "$@"
   exit_code=$?
   echo "docker-compose down"
   docker-compose down
