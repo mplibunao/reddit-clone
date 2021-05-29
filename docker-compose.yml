@@ -9,6 +9,7 @@ services:
       - "4000:4000"
     depends_on:
       - postgres
+      - redis
     env_file:
       - .env
   postgres:
@@ -20,6 +21,10 @@ services:
       - db_data:/var/lib/postgresql/data
     env_file:
       - .env
+  redis:
+    image: redis:6.2.3
+    ports:
+      - "6379:6379"
 
 volumes:
   db_data:
