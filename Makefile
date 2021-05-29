@@ -28,16 +28,18 @@ yarn.update := yarn upgrade-interactive --latest
 yarn.clean := yarn run clean
 
 # Services
-node_server := web
+node_server := server
+next_app := web
 postgres := postgres
 
 # aliases
 node := $(run) $(node_server)
 db := $(run) $(postgres)
+next := $(run) $(next_app)
 
 # Targets
 
-up: node.yarn migrate.create ## Runs all services
+up: node.yarn migrate.create next.yarn ## Runs all services
 	$(docker.up)
 
 up.build: ## Builds containers then runs it
@@ -48,7 +50,7 @@ cmd: ## Run commands on a running container using bash
 
 
 # Node server
-dev: node.yarn migrate.create ## Runs node server in dev mode
+node.dev: node.yarn migrate.create ## Runs node server in dev mode
 	$(node) yarn dev
 
 node.yarn: ## Install packages
@@ -95,7 +97,44 @@ migrate.reset: ## Reset db
 
 migrate.drop: ## Drop schema
 	$(node) $(migration) schema:drop --drop-db --dump --drop-migrations-table
+
+# Next js app
 	
+next.dev: ## Start dev server
+	$(next) yarn dev
+
+next.yarn: ## Install packages
+	$(next) yarn
+
+next.logs: ## Shows node server logs
+	$(logs) $(next_app)
+
+next.shell: ## Run shell
+	$(next) sh
+
+next.install: ## Add new dependencies
+	$(next) $(yarn.install)
+
+next.install.dev: ## Add new dev dependencies
+	$(next) $(yarn.install.dev)
+
+next.prettier: ## Checks for formatting errors
+	$(next) $(yarn.prettier.check)
+
+next.prettier.fix: ## Fixes formatting errors
+	$(next) $(yarn.prettier.fix)
+
+next.lint: ## Check for eslint errors
+	$(next) $(yarn.lint.check)
+
+next.lint.fix: ## Fixes eslint errors
+	$(next) $(yarn.lint.fix)
+
+next.audit: ## Checks for known security issues with installed packages
+	$(next) $(yarn.audit)
+
+next.update: ## Upgrade packages interactively
+	$(next) $(yarn.update)
 
 # DB 
 psql: ## Logs into psql using docker exec
