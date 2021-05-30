@@ -3,7 +3,7 @@ import { createClient, Provider } from 'urql'
 
 import theme from '../theme'
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: any) {
   const client = createClient({
     url: 'http://localhost:4000/graphql',
     fetchOptions: {

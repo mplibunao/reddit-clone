@@ -35,6 +35,7 @@ yarn.lint.fix := yarn lint:fix
 yarn.audit := yarn audit
 yarn.update := yarn upgrade-interactive --latest
 yarn.clean := yarn run clean
+yarn.gen := yarn gen
 
 # Services
 node_server := server
@@ -132,6 +133,8 @@ next.audit: ## Checks for known security issues with installed packages
 	$(next) $(yarn.audit)
 next.update: ## Upgrade packages interactively
 	$(next) $(yarn.update)
+next.gen: ## Generates graphql types and operations
+	$(next) $(yarn.gen)
 
 # Next js exec commands
 next.shell.e: ## Run shell
@@ -152,6 +155,8 @@ next.audit.e: ## Checks for known security issues with installed packages
 	$(next.exec) $(yarn.audit)
 next.update.e: ## Upgrade packages interactively
 	$(next.exec) $(yarn.update)
+next.gen.e: ## Generates graphql types and operations
+	$(next.exec) $(yarn.gen)
 
 # DB 
 db.psql.e: ## Logs into psql using docker exec
