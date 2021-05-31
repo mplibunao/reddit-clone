@@ -1,546 +1,564 @@
-import gql from 'graphql-tag'
-import * as Urql from 'urql'
-export type Maybe<T> = T | null
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K]
-}
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> }
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> }
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+import gql from 'graphql-tag';
+import * as Urql from 'urql';
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string
-  String: string
-  Boolean: boolean
-  Int: number
-  Float: number
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
   /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
-  DateTime: any
-}
+  DateTime: any;
+};
+
 
 export type FieldError = {
-  __typename?: 'FieldError'
-  field: Scalars['String']
-  message: Scalars['String']
-}
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
 
 export type Mutation = {
-  __typename?: 'Mutation'
-  createPost: Post
-  updatePost?: Maybe<Post>
-  deletePost: Scalars['Boolean']
-  register: UserResponse
-  login: UserResponse
-}
+  __typename?: 'Mutation';
+  createPost: Post;
+  updatePost?: Maybe<Post>;
+  deletePost: Scalars['Boolean'];
+  register: UserResponse;
+  login: UserResponse;
+};
+
 
 export type MutationCreatePostArgs = {
-  title: Scalars['String']
-}
+  title: Scalars['String'];
+};
+
 
 export type MutationUpdatePostArgs = {
-  title?: Maybe<Scalars['String']>
-  id: Scalars['String']
-}
+  title?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+};
+
 
 export type MutationDeletePostArgs = {
-  id: Scalars['String']
-}
+  id: Scalars['String'];
+};
+
 
 export type MutationRegisterArgs = {
-  options: UsernamePasswordInput
-}
+  options: UsernamePasswordInput;
+};
+
 
 export type MutationLoginArgs = {
-  options: UsernamePasswordInput
-}
+  options: UsernamePasswordInput;
+};
 
 export type Post = {
-  __typename?: 'Post'
-  id: Scalars['ID']
-  createdAt: Scalars['DateTime']
-  updatedAt: Scalars['DateTime']
-  title: Scalars['String']
-}
+  __typename?: 'Post';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  title: Scalars['String'];
+};
 
 export type Query = {
-  __typename?: 'Query'
-  posts: Array<Post>
-  post?: Maybe<Post>
-  me?: Maybe<User>
-}
+  __typename?: 'Query';
+  posts: Array<Post>;
+  post?: Maybe<Post>;
+  me?: Maybe<User>;
+};
+
 
 export type QueryPostArgs = {
-  id: Scalars['String']
-}
+  id: Scalars['String'];
+};
 
 export type User = {
-  __typename?: 'User'
-  id: Scalars['ID']
-  createdAt: Scalars['DateTime']
-  updatedAt: Scalars['DateTime']
-  username: Scalars['String']
-}
+  __typename?: 'User';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  username: Scalars['String'];
+};
 
 export type UserResponse = {
-  __typename?: 'UserResponse'
-  errors?: Maybe<Array<FieldError>>
-  user?: Maybe<User>
-}
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  user?: Maybe<User>;
+};
 
 export type UsernamePasswordInput = {
-  username: Scalars['String']
-  password: Scalars['String']
-}
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type RegularUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'username'>
+);
 
 export type LoginMutationVariables = Exact<{
-  options: UsernamePasswordInput
-}>
+  options: UsernamePasswordInput;
+}>;
 
-export type LoginMutation = { __typename?: 'Mutation' } & {
-  login: { __typename?: 'UserResponse' } & {
-    errors?: Maybe<
-      Array<
-        { __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>
-      >
-    >
-    user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'username'>>
-  }
-}
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>>, user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )> }
+  ) }
+);
 
 export type RegisterMutationVariables = Exact<{
-  options: UsernamePasswordInput
-}>
+  options: UsernamePasswordInput;
+}>;
 
-export type RegisterMutation = { __typename?: 'Mutation' } & {
-  register: { __typename?: 'UserResponse' } & {
-    errors?: Maybe<
-      Array<
-        { __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>
-      >
-    >
-    user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'username'>>
-  }
-}
 
-export type MeQueryVariables = Exact<{ [key: string]: never }>
+export type RegisterMutation = (
+  { __typename?: 'Mutation' }
+  & { register: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>>, user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )> }
+  ) }
+);
 
-export type MeQuery = { __typename?: 'Query' } & {
-  me?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'username'>>
-}
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
-import { IntrospectionQuery } from 'graphql'
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'User' }
+    & RegularUserFragment
+  )> }
+);
+
+import { IntrospectionQuery } from 'graphql';
 export default {
-  __schema: {
-    queryType: {
-      name: 'Query',
+  "__schema": {
+    "queryType": {
+      "name": "Query"
     },
-    mutationType: {
-      name: 'Mutation',
+    "mutationType": {
+      "name": "Mutation"
     },
-    subscriptionType: null,
-    types: [
+    "subscriptionType": null,
+    "types": [
       {
-        kind: 'OBJECT',
-        name: 'FieldError',
-        fields: [
+        "kind": "OBJECT",
+        "name": "FieldError",
+        "fields": [
           {
-            name: 'field',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "field",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'message',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "message",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
-          },
+            "args": []
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'OBJECT',
-        name: 'Mutation',
-        fields: [
+        "kind": "OBJECT",
+        "name": "Mutation",
+        "fields": [
           {
-            name: 'createPost',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'Post',
-                ofType: null,
-              },
+            "name": "createPost",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Post",
+                "ofType": null
+              }
             },
-            args: [
+            "args": [
               {
-                name: 'title',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
+                "name": "title",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
-            name: 'updatePost',
-            type: {
-              kind: 'OBJECT',
-              name: 'Post',
-              ofType: null,
+            "name": "updatePost",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Post",
+              "ofType": null
             },
-            args: [
+            "args": [
               {
-                name: 'title',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
+                "name": "title",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Any"
+                }
               },
               {
-                name: 'id',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
-            name: 'deletePost',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "deletePost",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [
+            "args": [
               {
-                name: 'id',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
-            name: 'register',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'UserResponse',
-                ofType: null,
-              },
+            "name": "register",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserResponse",
+                "ofType": null
+              }
             },
-            args: [
+            "args": [
               {
-                name: 'options',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
+                "name": "options",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
-            name: 'login',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'UserResponse',
-                ofType: null,
-              },
+            "name": "login",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserResponse",
+                "ofType": null
+              }
             },
-            args: [
+            "args": [
               {
-                name: 'options',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
+                "name": "options",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'OBJECT',
-        name: 'Post',
-        fields: [
+        "kind": "OBJECT",
+        "name": "Post",
+        "fields": [
           {
-            name: 'id',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'createdAt',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "createdAt",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'updatedAt',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "updatedAt",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'title',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "title",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
-          },
+            "args": []
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'OBJECT',
-        name: 'Query',
-        fields: [
+        "kind": "OBJECT",
+        "name": "Query",
+        "fields": [
           {
-            name: 'posts',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'Post',
-                    ofType: null,
-                  },
-                },
-              },
+            "name": "posts",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Post",
+                    "ofType": null
+                  }
+                }
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'post',
-            type: {
-              kind: 'OBJECT',
-              name: 'Post',
-              ofType: null,
+            "name": "post",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Post",
+              "ofType": null
             },
-            args: [
+            "args": [
               {
-                name: 'id',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
-            name: 'me',
-            type: {
-              kind: 'OBJECT',
-              name: 'User',
-              ofType: null,
+            "name": "me",
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
             },
-            args: [],
-          },
+            "args": []
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'OBJECT',
-        name: 'User',
-        fields: [
+        "kind": "OBJECT",
+        "name": "User",
+        "fields": [
           {
-            name: 'id',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'createdAt',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "createdAt",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'updatedAt',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "updatedAt",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'username',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
+            "name": "username",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
             },
-            args: [],
-          },
+            "args": []
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'OBJECT',
-        name: 'UserResponse',
-        fields: [
+        "kind": "OBJECT",
+        "name": "UserResponse",
+        "fields": [
           {
-            name: 'errors',
-            type: {
-              kind: 'LIST',
-              ofType: {
-                kind: 'NON_NULL',
-                ofType: {
-                  kind: 'OBJECT',
-                  name: 'FieldError',
-                  ofType: null,
-                },
-              },
+            "name": "errors",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "FieldError",
+                  "ofType": null
+                }
+              }
             },
-            args: [],
+            "args": []
           },
           {
-            name: 'user',
-            type: {
-              kind: 'OBJECT',
-              name: 'User',
-              ofType: null,
+            "name": "user",
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
             },
-            args: [],
-          },
+            "args": []
+          }
         ],
-        interfaces: [],
+        "interfaces": []
       },
       {
-        kind: 'SCALAR',
-        name: 'Any',
-      },
+        "kind": "SCALAR",
+        "name": "Any"
+      }
     ],
-    directives: [],
-  },
-} as unknown as IntrospectionQuery
-
+    "directives": []
+  }
+} as unknown as IntrospectionQuery;
+export const RegularUserFragmentDoc = gql`
+    fragment RegularUser on User {
+  id
+  username
+}
+    `;
 export const LoginDocument = gql`
-  mutation Login($options: UsernamePasswordInput!) {
-    login(options: $options) {
-      errors {
-        field
-        message
-      }
-      user {
-        id
-        username
-      }
+    mutation Login($options: UsernamePasswordInput!) {
+  login(options: $options) {
+    errors {
+      field
+      message
+    }
+    user {
+      ...RegularUser
     }
   }
-`
+}
+    ${RegularUserFragmentDoc}`;
 
 export function useLoginMutation() {
-  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument)
-}
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
 export const RegisterDocument = gql`
-  mutation Register($options: UsernamePasswordInput!) {
-    register(options: $options) {
-      errors {
-        field
-        message
-      }
-      user {
-        id
-        username
-      }
+    mutation Register($options: UsernamePasswordInput!) {
+  register(options: $options) {
+    errors {
+      field
+      message
+    }
+    user {
+      ...RegularUser
     }
   }
-`
+}
+    ${RegularUserFragmentDoc}`;
 
 export function useRegisterMutation() {
-  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(
-    RegisterDocument
-  )
-}
+  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
 export const MeDocument = gql`
-  query Me {
-    me {
-      id
-      username
-    }
+    query Me {
+  me {
+    ...RegularUser
   }
-`
-
-export function useMeQuery(
-  options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}
-) {
-  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options })
 }
+    ${RegularUserFragmentDoc}`;
 
+export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+};
