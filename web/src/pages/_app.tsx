@@ -4,6 +4,7 @@ import { cacheExchange, Cache, QueryInput } from '@urql/exchange-graphcache'
 import theme from '../theme'
 import {
   LoginMutation,
+  LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
@@ -29,6 +30,14 @@ function MyApp({ Component, pageProps }: any) {
       cacheExchange({
         updates: {
           Mutation: {
+            logout: (_result, _args, cache, _info) => {
+              betterUpdateQuery<LogoutMutation, MeQuery>(
+                cache,
+                { query: MeDocument },
+                _result,
+                () => ({ me: null })
+              )
+            },
             login: (_result, _args, cache, _info) => {
               betterUpdateQuery<LoginMutation, MeQuery>(
                 cache,
