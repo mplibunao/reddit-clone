@@ -6,11 +6,14 @@ import { Box, Button } from '@chakra-ui/react'
 import { useLoginMutation } from '../generated/graphql'
 import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
+import { createUrqlClient } from '../utils/createUrqlClient'
+import { withUrqlClient } from 'next-urql'
 
 export type LoginProps = {}
 
 export const Login = (props: LoginProps): JSX.Element => {
-  const [_, login] = useLoginMutation()
+  const [{ error }, login] = useLoginMutation()
+  console.log('error', error) // eslint-disable-line no-console
   const router = useRouter()
 
   return (
@@ -59,4 +62,4 @@ export const Login = (props: LoginProps): JSX.Element => {
   )
 }
 
-export default Login
+export default withUrqlClient(createUrqlClient)(Login)
