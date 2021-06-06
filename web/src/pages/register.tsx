@@ -16,7 +16,7 @@ export const Register = (): JSX.Element => {
   return (
     <Wrapper variant='small'>
       <Formik
-        initialValues={{ username: '', password: '' }}
+        initialValues={{ email: '', username: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
           const response = await register({ options: values })
 
@@ -34,6 +34,15 @@ export const Register = (): JSX.Element => {
               placeholder='username'
               label='Username'
             />
+
+            <Box mt={4}>
+              <InputField
+                name='email'
+                placeholder='Email'
+                label='Email'
+                type='text'
+              />
+            </Box>
 
             <Box mt={4}>
               <InputField

@@ -23,6 +23,7 @@ ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 # Commands
 exec := docker-compose exec
 run := ./run.sh run
+run.no_service_ports := docker-compose run --rm
 logs := docker-compose logs --tail=$(TAIL)
 docker.up := ./run.sh up
 migration := yarn run mikro-orm
@@ -45,7 +46,7 @@ postgres := postgres
 # aliases
 node := $(run) $(node_server)
 node.exec := $(exec) $(node_server)
-db := $(run) $(postgres)
+db := $(run.no_service_ports) $(postgres)
 db.exec := $(exec) $(postgres)
 next := $(run) $(next_app)
 next.exec := $(exec) $(next_app)
@@ -89,6 +90,8 @@ migrate.reset: ## Reset db
 	$(node) $(migration) migration:down --to 0
 migrate.drop: ## Drop schema
 	$(node) $(migration) schema:drop --drop-db --dump --drop-migrations-table
+migrate.sync: ## Runs schema syncronization
+	$(node) $(migration) schema:update --run --dump
 
 ## Node exec commands
 node.sh.e: ## Runs shell

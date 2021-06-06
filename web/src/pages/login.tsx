@@ -19,9 +19,9 @@ export const Login = (props: LoginProps): JSX.Element => {
   return (
     <Wrapper variant='small'>
       <Formik
-        initialValues={{ username: '', password: '' }}
+        initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ options: values })
+          const response = await login(values)
 
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors))
@@ -33,9 +33,9 @@ export const Login = (props: LoginProps): JSX.Element => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name='username'
-              placeholder='username'
-              label='Username'
+              name='usernameOrEmail'
+              placeholder='username or email'
+              label='Username or Email'
             />
 
             <Box mt={4}>
