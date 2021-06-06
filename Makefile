@@ -29,6 +29,8 @@ docker.up := ./run.sh up
 migration := yarn run mikro-orm
 yarn.add := yarn add $(ARGS)
 yarn.add.dev := yarn add -D $(ARGS)
+yarn.remove := yarn remove $(ARGS)
+yarn.remove.dev := yarn remove $(ARGS)
 yarn.prettier.check := yarn prettier:check
 yarn.prettier.fix := yarn prettier:fix
 yarn.lint.check := yarn lint:check
@@ -70,6 +72,10 @@ node.add: ## Add new dependencies
 	$(node) $(yarn.add)
 node.add.dev: ## Add new dev dependencies
 	$(node) $(yarn.add.dev)
+node.remove: ## Remove dependencies
+	$(node) $(yarn.remove)
+node.remove.dev: ## Remove dev dependencies
+	$(node) $(yarn.remove.dev)
 node.prettier: ## Checks for formatting errors
 	$(node) $(yarn.prettier.check)
 node.prettier.fix: ## Fixes formatting errors

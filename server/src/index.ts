@@ -5,10 +5,10 @@ import config from './mikro-orm.config'
 import { ApolloServer } from 'apollo-server-express'
 import { buildSchema } from 'type-graphql'
 import { PostResolver, UserResolver } from './resolvers'
-import redis from 'redis'
+import Redis from 'ioredis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
-import { COOKIE_NAME, __prod__ } from './constants'
+import { COOKIE_NAME, NEXT_JS_HOST, REDIS_HOST, __prod__ } from './constants'
 import { MyContext } from './types'
 import cors from 'cors'
 
@@ -19,15 +19,16 @@ const main = async () => {
 
   const app = express()
 
+  console.log('REDIS_HOST', REDIS_HOST) // eslint-disable-line no-console
   const RedisStore = connectRedis(session)
-  const redisClient = redis.createClient({
-    host: 'redis',
+  const redis = new Redis({
+    host: REDIS_HOST,
     port: 6379,
   })
 
   app.use(
     cors({
-      origin: 'http://localhost:3000',
+      origin: NEXT_JS_HOST,
       credentials: true,
     })
   )
@@ -36,7 +37,7 @@ const main = async () => {
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTouch: true,
       }),
       cookie: {
@@ -56,7 +57,7 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
   })
 
   apolloServer.applyMiddleware({

@@ -12,9 +12,10 @@ import { User } from '../entities'
 import { MyContext } from '../types'
 import { EntityManager } from '@mikro-orm/postgresql'
 import { v4 } from 'uuid'
-import { COOKIE_NAME } from '../constants'
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX, NEXT_JS_HOST } from '../constants'
 import { UsernamePasswordInput } from '../validators'
 import { validateRegister } from '../utils/validateRegister'
+import { sendEmail } from '../utils/sendEmail'
 
 @ObjectType()
 class FieldError {
@@ -37,9 +38,32 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg('email') email: string, @Ctx() { em }: MyContext) {
+  async forgotPassword(
+    @Arg('email') email: string,
+    @Ctx() { em, redis }: MyContext
+  ): Promise<boolean> {
     const user = await em.findOne(User, { email })
-    return user
+
+    if (!user) {
+      return true
+    }
+
+    const token = v4()
+
+    await redis.set(
+      `${FORGET_PASSWORD_PREFIX}${token}`,
+      user.id,
+      'ex',
+      1000 * 60 * 60 * 24 * 3
+    ) // 3 days
+
+    sendEmail({
+      to: email,
+      html: `<a href="${NEXT_JS_HOST}/change-password/${token}">reset password</a>`,
+      subject: 'Change password',
+    })
+
+    return true
   }
 
   @Query(() => User, { nullable: true })
@@ -95,7 +119,7 @@ export class UserResolver {
           errors: [
             {
               field: 'username',
-              message: 'username already taken',
+              message: 'Username already taken',
             },
           ],
         }
@@ -127,8 +151,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'username',
-            message: "that user doesn't exist",
+            field: 'usernameOrEmail',
+            message: "That user doesn't exist",
           },
         ],
       }
@@ -140,7 +164,7 @@ export class UserResolver {
         errors: [
           {
             field: 'password',
-            message: 'incorrect password',
+            message: 'Incorrect password',
           },
         ],
       }
