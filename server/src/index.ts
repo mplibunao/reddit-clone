@@ -19,7 +19,6 @@ const main = async () => {
 
   const app = express()
 
-  console.log('REDIS_HOST', REDIS_HOST) // eslint-disable-line no-console
   const RedisStore = connectRedis(session)
   const redis = new Redis({
     host: REDIS_HOST,
