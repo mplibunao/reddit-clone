@@ -54,6 +54,11 @@ next := $(run) $(next_app)
 next.exec := $(exec) $(next_app)
 
 # Targets
+setup: ## First time setup
+	cd web && yarn && cd ..
+	cd server && yarn && cd ..
+	make up
+
 up: node.yarn migrate.create next.yarn ## Runs all services
 	$(docker.up)
 up.build: ## Builds containers then runs it
