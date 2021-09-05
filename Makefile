@@ -54,13 +54,17 @@ next := $(run) $(next_app)
 next.exec := $(exec) $(next_app)
 
 # Targets
-up: node.yarn migrate.create next.yarn ## Runs all services
+setup: ## First time setup
+	docker-compose build
+	make migrate.create
+
+up: node.yarn next.yarn ## Runs all services
 	$(docker.up)
 up.build: ## Builds containers then runs it
 	$(docker.up) --build 
 
 # Node server
-node.dev: node.yarn migrate.create ## Runs node server in dev mode
+node.dev: node.yarn ## Runs node server in dev mode
 	$(node) yarn dev
 node.yarn: ## Install packages
 	$(node) yarn

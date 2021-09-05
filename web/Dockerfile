@@ -5,10 +5,12 @@ EXPOSE 3000
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
-RUN mkdir /app
+RUN mkdir -p /app/node_modules
 WORKDIR /app
-ADD package.json yarn.lock /app/
-RUN yarn --pure-lockfile
+COPY package.json .
+COPY yarn.lock .
+#ADD package.json yarn.lock /app/
+RUN yarn --pure-lockfile --verbose
 ADD . /app
 
 CMD ["yarn", "dev"]
