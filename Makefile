@@ -54,7 +54,7 @@ next := $(run) $(next_app)
 next.exec := $(exec) $(next_app)
 
 # Targets
-up: node.yarn migrate.create next.yarn ## Runs all services
+up: node.yarn next.yarn ## Runs all services
 	$(docker.up)
 up.build: ## Builds containers then runs it
 	$(docker.up) --build 
@@ -174,3 +174,7 @@ db.psql: ## Logs into psql using docker run
 	$(db) psql -U postgres
 db.logs: ## Shows postgres logs
 	$(logs) $(postgres)
+db.createdb: ## Create new database
+	$(db) createdb $(ARGS)
+db.createdb.e: ## Create new database using docker exec
+	$(db.exec) createdb $(ARGS)

@@ -1,10 +1,20 @@
 #!/bin/bash
 # Usage: run.sh SERVICE [CMD...]
 
-function run {
+function run-service-ports {
   # run container using docker run then docker-compose down upon exiting
   echo "docker-compose run --rm --service-ports $@"
   docker-compose run --rm --service-ports "$@"
+  exit_code=$?
+  echo "docker-compose down"
+  docker-compose down
+  exit $exit_code
+}
+
+function run {
+  # run container using docker run then docker-compose down upon exiting
+  echo "docker-compose run --rm $@"
+  docker-compose run --rm "$@"
   exit_code=$?
   echo "docker-compose down"
   docker-compose down
