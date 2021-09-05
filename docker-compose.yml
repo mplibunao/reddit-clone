@@ -31,7 +31,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     env_file:
       - .env
 
@@ -41,6 +41,7 @@ services:
       - "6379:6379"
 
 volumes:
+  db_data:
   server:
     driver_opts:
       type: none
