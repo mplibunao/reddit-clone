@@ -161,12 +161,11 @@ export class UserResolver {
         })
         .returning('*')
         .execute()
-      console.log('result', result) // eslint-disable-line no-console
 
-      user = result.raw
+      user = result.raw[0]
     } catch (err) {
-      console.log('err', err) // eslint-disable-line no-console
-      if (err.detail.includes('already exists')) {
+      if (err.code === '23505') {
+        //if (err.detail.includes('already exists')) {
         return {
           errors: [
             {
