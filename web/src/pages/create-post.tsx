@@ -1,17 +1,18 @@
 import { Box, Button } from '@chakra-ui/react'
-import { Formik, Form } from 'formik'
+import { Form, Formik } from 'formik'
 import { withUrqlClient } from 'next-urql'
 import { useRouter } from 'next/router'
 import React from 'react'
 import InputField from '../components/InputField'
 import Layout from '../components/Layout'
-import Wrapper from '../components/Wrapper'
 import { useCreatePostMutation } from '../generated/graphql'
 import { createUrqlClient } from '../utils'
+import { useIsAuth } from '../utils/useIsAuth'
 
 export const CreatePost = (): JSX.Element => {
-  const router = useRouter()
   const [, createPost] = useCreatePostMutation()
+  const router = useRouter()
+  useIsAuth()
   return (
     <Layout variant='small'>
       <Formik

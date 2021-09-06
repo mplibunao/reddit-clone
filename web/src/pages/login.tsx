@@ -11,8 +11,7 @@ import { withUrqlClient } from 'next-urql'
 import NextLink from 'next/link'
 
 export const Login = (): JSX.Element => {
-  const [{ error }, login] = useLoginMutation()
-  console.log('error', error) // eslint-disable-line no-console
+  const [_, login] = useLoginMutation()
   const router = useRouter()
 
   return (
@@ -25,7 +24,11 @@ export const Login = (): JSX.Element => {
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors))
           } else if (response.data?.login.user) {
-            router.push('/')
+            if (typeof router.query.next === 'string') {
+              router.push(router.query.next)
+            } else {
+              router.push('/')
+            }
           }
         }}
       >
