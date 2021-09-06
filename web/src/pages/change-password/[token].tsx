@@ -10,9 +10,7 @@ import { useChangePasswordMutation } from '../../generated/graphql'
 import { createUrqlClient, toErrorMap } from '../../utils'
 import NextLink from 'next/link'
 
-export const ChangePassword: NextPage<{ token: string }> = ({
-  token,
-}): JSX.Element => {
+export const ChangePassword: NextPage<{ token: string }> = (): JSX.Element => {
   const router = useRouter()
   const [, changePassword] = useChangePasswordMutation()
   const [tokenError, setTokenError] = useState('')
@@ -24,7 +22,8 @@ export const ChangePassword: NextPage<{ token: string }> = ({
         onSubmit={async (values, { setErrors }) => {
           const response = await changePassword({
             newPassword: values.newPassword,
-            token,
+            token:
+              typeof router.query.token === 'string' ? router.query.token : '',
           })
 
           if (response.data?.changePassword.errors) {
@@ -73,10 +72,12 @@ export const ChangePassword: NextPage<{ token: string }> = ({
   )
 }
 
-ChangePassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  }
-}
+// not needed anymore if we take the token from router
+// faster w/o getInitialProps unless doing ssr
+//ChangePassword.getInitialProps = ({ query }) => {
+//return {
+//token: query.token as string,
+//}
+//}
 
 export default withUrqlClient(createUrqlClient)(ChangePassword)
