@@ -20,9 +20,10 @@ import { MyContext } from './types'
 import cors from 'cors'
 import { createConnection } from 'typeorm'
 import { Post, User } from './entities'
+import path from 'path'
 
 const main = async () => {
-  await createConnection({
+  const conn = await createConnection({
     type: 'postgres',
     database: `${__dbName__}`,
     username: __dbUser__,
@@ -31,7 +32,10 @@ const main = async () => {
     synchronize: true,
     url: __dbUrl__,
     entities: [Post, User],
+    migrations: [path.join(__dirname, './migrations/*')],
   })
+
+  await conn.runMigrations()
 
   const app = express()
 
