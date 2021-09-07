@@ -34,20 +34,32 @@ export const cursorPagination = (): Resolver<any, any, any> => {
     }
 
     const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`
-    const isItInTheCache = cache.resolve(entityKey, fieldKey)
-    console.log('isItInTheCache', isItInTheCache) // eslint-disable-line no-console
+    const isItInTheCache = cache.resolve(
+      cache.resolve(entityKey, fieldKey) as string,
+      'posts'
+    )
     // if true, make urql think we did not pass all the data so it's going to fetch from
     // server
     info.partial = !isItInTheCache
-
+    let hasMore = true
     const results: string[] = []
 
     fieldInfos.forEach((fieldInfo) => {
-      const data = cache.resolve(entityKey, fieldInfo.fieldKey) as string[]
+      // nested resolve since we are using a custom/nested shape resolver
+      const key = cache.resolve(entityKey, fieldInfo.fieldKey) as string
+      const data = cache.resolve(key, 'posts') as string[]
+      const _hasMore = cache.resolve(key, 'hasMore')
+      if (!_hasMore) {
+        hasMore = _hasMore as boolean
+      }
       results.push(...data)
     })
 
-    return results
+    return {
+      __typename: 'PaginatedPosts',
+      hasMore,
+      posts: results,
+    }
 
     //const visited = new Set();
     //let result: NullArray<string> = [];
@@ -111,6 +123,9 @@ export const createUrqlClient = (ssrExchange: any) => ({
   exchanges: [
     dedupExchange,
     cacheExchange({
+      keys: {
+        PaginatedPosts: () => null,
+      },
       resolvers: {
         Query: {
           posts: cursorPagination(),

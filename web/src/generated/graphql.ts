@@ -70,6 +70,12 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+export type PaginatedPosts = {
+  __typename?: 'PaginatedPosts';
+  posts: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
 export type Post = {
   __typename?: 'Post';
   id: Scalars['String'];
@@ -89,7 +95,7 @@ export type PostInput = {
 
 export type Query = {
   __typename?: 'Query';
-  posts: Array<Post>;
+  posts: PaginatedPosts;
   post?: Maybe<Post>;
   me?: Maybe<User>;
 };
@@ -238,10 +244,14 @@ export type PostsQueryVariables = Exact<{
 
 export type PostsQuery = (
   { __typename?: 'Query' }
-  & { posts: Array<(
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'textSnippet'>
-  )> }
+  & { posts: (
+    { __typename?: 'PaginatedPosts' }
+    & Pick<PaginatedPosts, 'hasMore'>
+    & { posts: Array<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'textSnippet'>
+    )> }
+  ) }
 );
 
 import { IntrospectionQuery } from 'graphql';
@@ -487,6 +497,42 @@ export default {
       },
       {
         "kind": "OBJECT",
+        "name": "PaginatedPosts",
+        "fields": [
+          {
+            "name": "posts",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Post",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "hasMore",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "Post",
         "fields": [
           {
@@ -589,15 +635,9 @@ export default {
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Post",
-                    "ofType": null
-                  }
-                }
+                "kind": "OBJECT",
+                "name": "PaginatedPosts",
+                "ofType": null
               }
             },
             "args": [
@@ -858,11 +898,14 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
 export const PostsDocument = gql`
     query Posts($limit: Int!, $cursor: String) {
   posts(cursor: $cursor, limit: $limit) {
-    id
-    createdAt
-    updatedAt
-    title
-    textSnippet
+    hasMore
+    posts {
+      id
+      createdAt
+      updatedAt
+      title
+      textSnippet
+    }
   }
 }
     `;
