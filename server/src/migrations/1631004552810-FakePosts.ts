@@ -106,5 +106,5 @@ insert into post (title, text, "creatorId", "createdAt") values ('Cadillac Recor
                                 `)
   }
 
-  public async down(): Promise<void> {}
+  public async down(_: QueryRunner): Promise<void> {}
 }
