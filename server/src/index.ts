@@ -19,7 +19,7 @@ import {
 import { MyContext } from './types'
 import cors from 'cors'
 import { createConnection } from 'typeorm'
-import { Post, User } from './entities'
+import { Post, Updoot, User } from './entities'
 import path from 'path'
 
 const main = async () => {
@@ -31,7 +31,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     url: __dbUrl__,
-    entities: [Post, User],
+    entities: [Post, User, Updoot],
     migrations: [path.join(__dirname, './migrations/*')],
   })
 

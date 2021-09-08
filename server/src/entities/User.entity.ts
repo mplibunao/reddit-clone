@@ -9,6 +9,7 @@ import {
   OneToMany,
 } from 'typeorm'
 import { Post } from '.'
+import { Updoot } from './Updoot.entity'
 
 @ObjectType()
 @Entity()
@@ -30,6 +31,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Post, (post) => post.creator)
   posts: Post[]
+
+  @OneToMany(() => Updoot, (updoot) => updoot.userId)
+  updoots: Updoot[]
 
   @Field(() => String)
   @CreateDateColumn()
