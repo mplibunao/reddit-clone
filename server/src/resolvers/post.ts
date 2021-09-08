@@ -61,7 +61,9 @@ export class PostResolver {
         json_build_object(
           'id', u.id,
           'username', u.username,
-          'email', u.email
+          'email', u.email,
+          'createdAt', u."createdAt",
+          'updatedAt', u."updatedAt"
         ) creator
         FROM post p 
         INNER JOIN public.user u ON u.id = p."creatorId"
@@ -71,7 +73,6 @@ export class PostResolver {
       `,
       replacements
     )
-    console.log('posts', posts) // eslint-disable-line no-console
 
     //const qb = getConnection()
     //.getRepository(Post)
