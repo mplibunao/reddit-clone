@@ -34,7 +34,8 @@ const Index = () => {
         <Stack spacing={8}>
           {data?.posts.posts.map((post) => (
             <Box p={5} shadow='md' borderWidth='1px' key={post.id}>
-              <Heading fontSize='xl'>{post.title}</Heading>
+              <Heading fontSize='xl'>{post.title}</Heading>{' '}
+              <Text>posted by {post.creator.username}</Text>
               <Text mt={4}>{post.textSnippet}</Text>
             </Box>
           ))}
