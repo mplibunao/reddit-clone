@@ -8,7 +8,7 @@ import NextLink from 'next/link'
 
 const Index = () => {
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 15,
     cursor: null as null | string,
   })
   const [{ data, fetching }] = usePostsQuery({
