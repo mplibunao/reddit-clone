@@ -23,6 +23,10 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
         icon={<ChevronUpIcon />}
         fontSize='24px'
         onClick={async () => {
+          if (post.voteStatus === 1) {
+            return
+          }
+
           setLoadingState('updoot-loading')
           await vote({
             postId: post.id,
@@ -31,6 +35,7 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
           setLoadingState('not-loading')
         }}
         isLoading={loadingState === 'updoot-loading'}
+        colorScheme={post.voteStatus === 1 ? 'green' : 'grey'}
       />
 
       {post.points}
@@ -40,6 +45,10 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
         icon={<ChevronDownIcon />}
         fontSize='24px'
         onClick={async () => {
+          if (post.voteStatus === -1) {
+            return
+          }
+
           setLoadingState('downdoot-loading')
           await vote({
             value: -1,
@@ -48,6 +57,7 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
           setLoadingState('not-loading')
         }}
         isLoading={loadingState === 'downdoot-loading'}
+        colorScheme={post.voteStatus === -1 ? 'orange' : 'grey'}
       />
     </Flex>
   )
