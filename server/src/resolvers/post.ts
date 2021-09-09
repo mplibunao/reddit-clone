@@ -56,7 +56,6 @@ export class PostResolver {
     // user has voted on post before
     // and they are changing their vote
     if (updoot && updoot?.value !== realValue) {
-      console.log('updoot', updoot) // eslint-disable-line no-console
       getConnection().transaction(async (tm) => {
         await tm.query(
           `
@@ -123,8 +122,10 @@ export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
     @Arg('limit', () => Int) limit: number,
-    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+    @Ctx() { req }: MyContext
   ): Promise<PaginatedPosts> {
+    const userId = req.session.userId
     const realLimit = Math.min(50, limit)
     // fetch an extra post from what user asks
     // if we get an extra it means there is still a next page
@@ -132,8 +133,14 @@ export class PostResolver {
 
     const replacements: any[] = [realLimitPlusOne]
 
+    if (userId) {
+      replacements.push(userId)
+    }
+
+    let cursorIdx = '3'
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)))
+      cursorIdx = replacements.length.toString()
     }
     const posts = await getConnection().query(
       `
@@ -144,10 +151,15 @@ export class PostResolver {
           'email', u.email,
           'createdAt', u."createdAt",
           'updatedAt', u."updatedAt"
-        ) creator
+        ) creator,
+        ${
+          userId
+            ? '(SELECT value FROM updoot WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
+            : 'null AS "voteStatus"'
+        }
         FROM post p 
         INNER JOIN public.user u ON u.id = p."creatorId"
-        ${cursor ? `WHERE p."createdAt" < $2` : ''}
+        ${cursor ? `WHERE p."createdAt" < $${cursorIdx}` : ''}
         ORDER BY p."createdAt" DESC
         LIMIT $1
       `,
