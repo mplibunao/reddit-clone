@@ -57,7 +57,7 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
           setLoadingState('not-loading')
         }}
         isLoading={loadingState === 'downdoot-loading'}
-        colorScheme={post.voteStatus === -1 ? 'orange' : 'grey'}
+        colorScheme={post.voteStatus === -1 ? 'red' : 'grey'}
       />
     </Flex>
   )
