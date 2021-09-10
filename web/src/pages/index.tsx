@@ -37,31 +37,33 @@ const Index = () => {
         <div>loading...</div>
       ) : (
         <Stack spacing={8}>
-          {data?.posts.posts.map((post) => (
-            <Flex p={5} shadow='md' borderWidth='1px' key={post.id}>
-              <UpdootSection post={post} />
-              <Box flex='1'>
-                <NextLink href='/post/[id]' as={`/post/${post.id}`}>
-                  <Link>
-                    <Heading fontSize='xl'>{post.title}</Heading>
-                  </Link>
-                </NextLink>
-                <Text>posted by {post.creator.username}</Text>
-                <Flex align='center'>
-                  <Text mt={4}>{post.textSnippet}</Text>
-                  <IconButton
-                    ml='auto'
-                    icon={<DeleteIcon />}
-                    aria-label={`Delete post ${post.title}`}
-                    onClick={() => {
-                      deletePost({ id: post.id })
-                    }}
-                    colorScheme='red'
-                  />
-                </Flex>
-              </Box>
-            </Flex>
-          ))}
+          {data?.posts.posts.map((post) =>
+            !post ? null : (
+              <Flex p={5} shadow='md' borderWidth='1px' key={post.id}>
+                <UpdootSection post={post} />
+                <Box flex='1'>
+                  <NextLink href='/post/[id]' as={`/post/${post.id}`}>
+                    <Link>
+                      <Heading fontSize='xl'>{post.title}</Heading>
+                    </Link>
+                  </NextLink>
+                  <Text>posted by {post.creator.username}</Text>
+                  <Flex align='center'>
+                    <Text mt={4}>{post.textSnippet}</Text>
+                    <IconButton
+                      ml='auto'
+                      icon={<DeleteIcon />}
+                      aria-label={`Delete post ${post.title}`}
+                      onClick={() => {
+                        deletePost({ id: post.id })
+                      }}
+                      colorScheme='red'
+                    />
+                  </Flex>
+                </Box>
+              </Flex>
+            )
+          )}
         </Stack>
       )}
 
