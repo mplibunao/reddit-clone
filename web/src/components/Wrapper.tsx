@@ -11,7 +11,7 @@ export type WrapperProps = {
 export const Wrapper: React.FC<WrapperProps> = ({
   children,
   variant = 'regular',
-}) => {
+}): JSX.Element => {
   return (
     <Box
       mt={8}
