@@ -225,7 +225,17 @@ export class PostResolver {
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     try {
-      await Post.delete({ id, creatorId: req.session.userId })
+      const post = await Post.findOne(id)
+      if (!post) {
+        return false
+      }
+
+      if (post.creatorId !== req.session.userId) {
+        throw new Error('not authorized')
+      }
+
+      await Updoot.delete({ postId: id })
+      await Post.delete({ id })
       return true
     } catch (err) {
       return false
