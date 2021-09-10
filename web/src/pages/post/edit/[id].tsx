@@ -7,13 +7,15 @@ import InputField from '../../../components/InputField'
 import Layout from '../../../components/Layout'
 import { usePostQuery, useUpdatePostMutation } from '../../../generated/graphql'
 import { createUrqlClient } from '../../../utils'
+import { getRouteParams } from '../../../utils/getRouteParams'
 
 export interface EditPostProps {}
 
 export const EditPost = (_props: EditPostProps): JSX.Element => {
   const router = useRouter()
+  const id = getRouteParams()
+
   const [, updatePost] = useUpdatePostMutation()
-  const id = typeof router.query.id === 'string' ? router.query.id : ''
   const [{ data, fetching }] = usePostQuery({
     variables: {
       id,
@@ -40,12 +42,9 @@ export const EditPost = (_props: EditPostProps): JSX.Element => {
     <Layout variant='small'>
       <Formik
         initialValues={{ title: data.post.title, text: data.post.text }}
-        onSubmit={async ({ text, title }) => {
-          updatePost({ id, text, title })
-          //const { error } = await createPost({ input: values })
-          //if (!error) {
-          //router.push('/')
-          //}
+        onSubmit={async (values) => {
+          await updatePost({ id, ...values })
+          router.back()
         }}
       >
         {({ isSubmitting }) => (

@@ -13,6 +13,7 @@ export const CreatePost = (): JSX.Element => {
   const [, createPost] = useCreatePostMutation()
   const router = useRouter()
   useIsAuth()
+
   return (
     <Layout variant='small'>
       <Formik
