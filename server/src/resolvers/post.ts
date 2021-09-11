@@ -46,6 +46,23 @@ export class PostResolver {
     return userLoader.load(post.creatorId)
   }
 
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(
+    @Root() post: Post,
+    @Ctx() { updootLoader, req }: MyContext
+  ) {
+    if (!req.session.userId) {
+      return null
+    }
+
+    const updoot = await updootLoader.load({
+      postId: post.id,
+      userId: req.session.userId,
+    })
+
+    return updoot ? updoot.value : null
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async vote(
@@ -127,43 +144,31 @@ export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
     @Arg('limit', () => Int) limit: number,
-    @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
-    @Ctx() { req }: MyContext
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
   ): Promise<PaginatedPosts> {
-    const userId = req.session.userId
     const realLimit = Math.min(50, limit)
     // fetch an extra post from what user asks
     // if we get an extra it means there is still a next page
     const realLimitPlusOne = realLimit + 1
 
-    const replacements: any[] = [realLimitPlusOne]
+    const replacements: Array<number | Date> = [realLimitPlusOne]
 
-    if (userId) {
-      replacements.push(userId)
-    }
-
-    let cursorIdx = '3'
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)))
-      cursorIdx = replacements.length.toString()
     }
+
     const posts = await getConnection().query(
       `
-        SELECT p.*,
-        ${
-          userId
-            ? '(SELECT value FROM updoot WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
-            : 'null AS "voteStatus"'
-        }
+        SELECT p.*
         FROM post p 
-        ${cursor ? `WHERE p."createdAt" < $${cursorIdx}` : ''}
+        ${cursor ? `WHERE p."createdAt" < $2` : ''}
         ORDER BY p."createdAt" DESC
         LIMIT $1
       `,
       replacements
     )
 
-    // raw sql w/ creator relation
+    // raw sql w/ creator relation and voteStatus
     //const posts = await getConnection().query(
     //`
     //SELECT p.*,

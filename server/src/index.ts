@@ -22,6 +22,7 @@ import { createConnection } from 'typeorm'
 import { Post, Updoot, User } from './entities'
 import path from 'path'
 import { createUserLoader } from './utils/createUserLoader'
+import { createUpdootLoader } from './utils/createUpdootLoader'
 
 const main = async () => {
   const conn = await createConnection({
@@ -87,6 +88,7 @@ const main = async () => {
       // request
       // caches and batches users in a single request
       userLoader: createUserLoader(),
+      updootLoader: createUpdootLoader(),
     }),
   })
 
