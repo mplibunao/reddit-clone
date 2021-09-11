@@ -42,8 +42,8 @@ export class PostResolver {
   }
 
   @FieldResolver(() => User)
-  creator(@Root() post: Post) {
-    return User.findOne(post.creatorId)
+  creator(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
+    return userLoader.load(post.creatorId)
   }
 
   @Mutation(() => Boolean)
@@ -163,6 +163,7 @@ export class PostResolver {
       replacements
     )
 
+    // raw sql w/ creator relation
     //const posts = await getConnection().query(
     //`
     //SELECT p.*,
@@ -187,6 +188,7 @@ export class PostResolver {
     //replacements
     //)
 
+    // query builder (no post.creator)
     //const qb = getConnection()
     //.getRepository(Post)
     //.createQueryBuilder('p')

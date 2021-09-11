@@ -21,6 +21,7 @@ import cors from 'cors'
 import { createConnection } from 'typeorm'
 import { Post, Updoot, User } from './entities'
 import path from 'path'
+import { createUserLoader } from './utils/createUserLoader'
 
 const main = async () => {
   const conn = await createConnection({
@@ -78,7 +79,15 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ req, res, redis }),
+    context: ({ req, res }): MyContext => ({
+      req,
+      res,
+      redis,
+      // context is run on every request so new userLoader is created on every
+      // request
+      // caches and batches users in a single request
+      userLoader: createUserLoader(),
+    }),
   })
 
   apolloServer.applyMiddleware({
