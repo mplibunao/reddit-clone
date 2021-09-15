@@ -1,9 +1,6 @@
 FROM node:14.16.1-alpine
 
-EXPOSE 4000 
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
 
 RUN mkdir -p /app/node_modules
 WORKDIR /app
@@ -14,3 +11,7 @@ RUN yarn --pure-lockfile --verbose
 ADD . /app
 
 CMD ["yarn", "start"]
+# ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
+EXPOSE 4000 
