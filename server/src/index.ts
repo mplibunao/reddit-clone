@@ -17,7 +17,7 @@ import { createUpdootLoader } from './utils/createUpdootLoader'
 import dotenvsafe from 'dotenv-safe'
 
 dotenvsafe.config({
-  example: '../../.env.example',
+  example: '../.env.example',
 })
 
 const main = async () => {

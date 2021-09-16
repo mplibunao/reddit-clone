@@ -10,7 +10,7 @@
     "prettier:check": "prettier --list-different 'src/**/*.{js,jsx,ts,tsx}'",
     "prettier:fix": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "clean": "rimraf dist",
-    "build": "tsc"
+    "build": "rimraf dist && tsc"
   },
   "license": "MIT",
   "devDependencies": {
