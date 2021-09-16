@@ -1,6 +1,6 @@
 FROM node:14.16.1-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # COPY is done by default with root
 # since we're using node user, it will not have enough permissions
@@ -16,14 +16,17 @@ RUN yarn --pure-lockfile --verbose
 # Prefer COPY unless you need thoso 2
 # ADD . /app
 COPY --chown=node:node ./server .
+
+WORKDIR /usr/src
 COPY --chown=node:node .env .env.example ./
 
+WORKDIR /usr/src/app
 RUN yarn build
 # not sure but I think tsc needs to generate dist as root
 # issue is I want to run rimraf atleast once when starting in dev mode
 # but that fails because node doesn't have enough permissions for root
 # folders (dist)
-RUN chown -R node.node /app/dist
+RUN chown -R node.node /usr/src/app/dist
 
 # ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
 ARG NODE_ENV
