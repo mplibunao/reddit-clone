@@ -6,13 +6,13 @@ COPY package.json ./
 COPY yarn.lock ./
 
 RUN yarn --pure-lockfile --verbose
-RUN yarn build
 
 # ADD also allows urls and expands tar files
 # Prefer COPY unless you need thoso 2
 # ADD . /app
 COPY . .
 
+RUN yarn build
 
 # ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
 ARG NODE_ENV

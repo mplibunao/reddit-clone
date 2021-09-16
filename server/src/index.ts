@@ -6,16 +6,7 @@ import { PostResolver, UserResolver } from './resolvers'
 import Redis from 'ioredis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
-import {
-  COOKIE_NAME,
-  NEXT_JS_HOST,
-  REDIS_HOST,
-  __dbPassword__,
-  __dbUrl__,
-  __dbUser__,
-  __prod__,
-  __dbName__,
-} from './constants'
+import { COOKIE_NAME, NEXT_JS_HOST, __dbUrl__, __prod__ } from './constants'
 import { MyContext } from './types'
 import cors from 'cors'
 import { createConnection } from 'typeorm'
@@ -23,13 +14,15 @@ import { Post, Updoot, User } from './entities'
 import path from 'path'
 import { createUserLoader } from './utils/createUserLoader'
 import { createUpdootLoader } from './utils/createUpdootLoader'
+import dotenvsafe from 'dotenv-safe'
+
+dotenvsafe.config({
+  example: '../../.env.example',
+})
 
 const main = async () => {
   const conn = await createConnection({
     type: 'postgres',
-    database: `${__dbName__}`,
-    username: __dbUser__,
-    password: __dbPassword__,
     logging: true,
     synchronize: true,
     url: __dbUrl__,
@@ -44,10 +37,7 @@ const main = async () => {
   const app = express()
 
   const RedisStore = connectRedis(session)
-  const redis = new Redis({
-    host: REDIS_HOST,
-    port: 6379,
-  })
+  const redis = new Redis(process.env.REDIS_URL)
 
   app.use(
     cors({
@@ -97,7 +87,7 @@ const main = async () => {
     cors: false,
   })
 
-  app.listen(4000, () => {
+  app.listen(parseInt(process.env.PORT), () => {
     console.log('server started on localhost:4000')
   })
 }

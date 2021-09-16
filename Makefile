@@ -63,6 +63,10 @@ up.build: ## Builds containers then runs it
 	$(docker.up) --build 
 
 # Node server
+gen.env.types: ## Generates .env.example and types for env
+	npx gen-env-types .env -o server/env.d.ts
+node.build: ## Build docker image for server
+	docker build -t mplibunao/lireddit:test -f ./server/Dockerfile .
 node.dev: node.yarn ## Runs node server in dev mode
 	$(node) yarn dev
 node.yarn: ## Install packages
