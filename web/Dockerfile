@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 #ADD package.json yarn.lock /app/
-RUN yarn --pure-lockfile --verbose
+RUN yarn --pure-lockfile
 ADD . /app
 
 CMD ["yarn", "dev"]

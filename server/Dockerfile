@@ -10,7 +10,7 @@ COPY --chown=node:node ./server/package.json ./server/yarn.lock ./
 # Just add RUN chown -r node:node /usr/src/app (might slow build times)
 # or just tell your teammate to update their docker version :)
 
-RUN yarn --pure-lockfile --verbose
+RUN yarn --pure-lockfile
 
 # ADD also allows urls and expands tar files
 # Prefer COPY unless you need thoso 2
