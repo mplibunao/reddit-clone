@@ -12,6 +12,7 @@ services:
       - redis
     env_file:
       - .env
+    command: ["yarn", "start"]
 
   web:
     build: ./web

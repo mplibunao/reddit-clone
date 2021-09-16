@@ -1,17 +1,26 @@
 FROM node:14.16.1-alpine
 
+WORKDIR /usr/src/app
 
+COPY package.json ./
+COPY yarn.lock ./
 
-RUN mkdir -p /app/node_modules
-WORKDIR /app
-COPY package.json .
-COPY yarn.lock .
-#ADD package.json yarn.lock /app/
 RUN yarn --pure-lockfile --verbose
-ADD . /app
+RUN yarn build
 
-CMD ["yarn", "start"]
+# ADD also allows urls and expands tar files
+# Prefer COPY unless you need thoso 2
+# ADD . /app
+COPY . .
+
+
 # ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
+
 EXPOSE 4000 
+CMD ["node", "dist/index.js"]
+
+# by default uses root user which is bad for security
+# node image provides node user
+USER node
