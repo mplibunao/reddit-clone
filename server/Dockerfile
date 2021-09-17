@@ -26,7 +26,7 @@ RUN yarn build
 # issue is I want to run rimraf atleast once when starting in dev mode
 # but that fails because node doesn't have enough permissions for root
 # folders (dist)
-RUN chown -R node.node /usr/src/app/dist
+RUN chown -R node:node /usr/src/app/dist
 
 # ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
 ARG NODE_ENV
