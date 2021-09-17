@@ -11,5 +11,6 @@ declare namespace NodeJS {
     REDIS_HOST: string;
     REDIS_URL: string;
     PORT: string;
+    SESSION_SECRET: string;
   }
 }
