@@ -3,6 +3,7 @@
 
 function run-service-ports {
   # run container using docker run then docker-compose down upon exiting
+  # Runs on specified ports
   echo "docker-compose run --rm --service-ports $@"
   docker-compose run --rm --service-ports "$@"
   exit_code=$?
@@ -13,6 +14,8 @@ function run-service-ports {
 
 function run {
   # run container using docker run then docker-compose down upon exiting
+  # does not use ports specified in the service config preventing port
+  # collisions
   echo "docker-compose run --rm $@"
   docker-compose run --rm "$@"
   exit_code=$?

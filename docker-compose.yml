@@ -6,7 +6,6 @@ services:
       dockerfile: ./server/Dockerfile
     volumes:
       - server:/usr/src/app
-      - ./server/node_modules:/usr/src/app/node_modules
     ports:
       - "4000:4000"
     depends_on:
@@ -20,7 +19,6 @@ services:
     build: ./web
     volumes:
       - web:/app
-      - ./web/node_modules:/app/node_modules
     ports:
       - "3000:3000"
     depends_on:

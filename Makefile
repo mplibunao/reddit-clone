@@ -23,9 +23,11 @@ ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 # Commands
 exec := docker-compose exec
 run := ./run.sh run
-run.no_service_ports := docker-compose run --rm
+run-service-ports := ./run.sh run-service-ports
 logs := docker-compose logs --tail=$(TAIL)
 docker.up := ./run.sh up
+
+
 migration := yarn run mikro-orm
 yarn.add := yarn add $(ARGS)
 yarn.add.dev := yarn add -D $(ARGS)
@@ -48,7 +50,7 @@ postgres := postgres
 # aliases
 node := $(run) $(node_server)
 node.exec := $(exec) $(node_server)
-db := $(run.no_service_ports) $(postgres)
+db := $(run) $(postgres)
 db.exec := $(exec) $(postgres)
 next := $(run) $(next_app)
 next.exec := $(exec) $(next_app)
