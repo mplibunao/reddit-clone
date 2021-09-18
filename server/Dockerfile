@@ -17,22 +17,28 @@ RUN yarn --pure-lockfile
 # ADD . /app
 COPY --chown=node:node ./server .
 
+
+# Put env files on ../ since app is bind mounted
+# thus will be overwritten by file in host (no .env file)
 WORKDIR /usr/src
-COPY --chown=node:node .env .env.example ./
+COPY --chown=node:node .env.example ./
 
 WORKDIR /usr/src/app
+COPY --chown=node:node .env.production .env
 RUN yarn build
 # not sure but I think tsc needs to generate dist as root
 # issue is I want to run rimraf atleast once when starting in dev mode
 # but that fails because node doesn't have enough permissions for root
 # folders (dist)
 RUN chown -R node:node /usr/src/app/dist
+#RUN chmod +x ./entrypoint
 
 # ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
 EXPOSE 4000 
+#ENTRYPOINT ["sh", "./entrypoint"]
 CMD ["node", "dist/index.js"]
 
 # by default uses root user which is bad for security
