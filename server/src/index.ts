@@ -24,7 +24,7 @@ const main = async () => {
   const conn = await createConnection({
     type: 'postgres',
     logging: true,
-    synchronize: true,
+    synchronize: false,
     url: __dbUrl__,
     entities: [Post, User, Updoot],
     migrations: [path.join(__dirname, './migrations/*')],
@@ -39,6 +39,9 @@ const main = async () => {
   const RedisStore = connectRedis(session)
   const redis = new Redis(process.env.REDIS_URL)
 
+  // Tell express that we have proxy sitting in front of api so
+  // cookies / sessions work
+  app.set('proxy', 1)
   app.use(
     cors({
       origin: NEXT_JS_HOST,
@@ -58,6 +61,7 @@ const main = async () => {
         httpOnly: true,
         sameSite: 'lax', // csrf
         secure: __prod__, // cookie only works in https
+        //domain: ''
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
