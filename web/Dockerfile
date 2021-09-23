@@ -3,7 +3,7 @@ FROM node:14.16.1-alpine
 EXPOSE 3000
 
 ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+ENV NODE_ENV production
 
 RUN mkdir -p /app/node_modules
 WORKDIR /app

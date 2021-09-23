@@ -61,7 +61,7 @@ const main = async () => {
         httpOnly: true,
         sameSite: 'lax', // csrf
         secure: __prod__, // cookie only works in https
-        //domain: ''
+        domain: __prod__ ? '.mplibunao.me' : undefined,
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,

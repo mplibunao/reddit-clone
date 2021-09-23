@@ -83,7 +83,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
   }
 
   return {
-    url: URL,
+    url: URL as string,
     fetchOptions: {
       credentials: 'include' as const,
       headers: cookie

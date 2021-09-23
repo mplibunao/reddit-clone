@@ -1,4 +1,5 @@
 FROM node:14.16.1-alpine
+#ENV NODE_ENV $NODE_ENV
 
 WORKDIR /usr/src/app
 
@@ -21,10 +22,14 @@ COPY --chown=node:node ./server .
 # Put env files on ../ since app is bind mounted
 # thus will be overwritten by file in host (no .env file)
 WORKDIR /usr/src
+# moving to top one directory above doesn't work since dokku looks for .env
+# inside /app
+# might just remove this dotenvsafe from my setup
 COPY --chown=node:node .env.example ./
 
 WORKDIR /usr/src/app
-COPY --chown=node:node .env.production .env
+
+COPY --chown=node:node .env.production ./.env
 RUN yarn build
 # not sure but I think tsc needs to generate dist as root
 # issue is I want to run rimraf atleast once when starting in dev mode
@@ -33,11 +38,17 @@ RUN yarn build
 RUN chown -R node:node /usr/src/app/dist
 #RUN chmod +x ./entrypoint
 
-# ARG ON TOP CAUSES CACHE MISSES FOR LINES USING ARG AND RUNS
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+# ARG ON TOP CAUSES CACHE MISSES FOR RUNS AFTER ARG CAUSE IT IMPLICITLY USES THE
+# ARGS
+#ARG NODE_ENV
+ENV NODE_ENV production
 
-EXPOSE 4000 
+# dokku doesn't run as pid 1 anyway
+#RUN apk add --no-cache tini
+# Tini is now available at /sbin/tini
+#ENTRYPOINT ["/sbin/tini", "--"]
+
+EXPOSE 80 
 #ENTRYPOINT ["sh", "./entrypoint"]
 CMD ["node", "dist/index.js"]
 
