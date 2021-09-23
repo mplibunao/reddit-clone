@@ -64,7 +64,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ${{ steps.meta.output.tags }}
-            docker tag ${{ steps.meta.output.tags }} dokku/api:${{ env.IMAGE_NAME }}
+            docker pull ${{ steps.meta.outputs.tags }}
+            docker tag ${{ steps.meta.outputs.tags }} dokku/api:${{ steps.meta.outputs.tags }}
             dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-            dokku tags:deploy api ${{ env.IMAGE_NAME }}
+            dokku tags:deploy api ${{ steps.meta.outputs.tags }}
