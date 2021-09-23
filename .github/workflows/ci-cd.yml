@@ -58,11 +58,13 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: SSH and deploy docker image
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull ${{ steps.meta.output.tags }}
+            docker tag ${{ steps.meta.output.tags }} dokku/api:${{ env.IMAGE_NAME }}
+            dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            dokku tags:deploy api ${{ env.IMAGE_NAME }}
