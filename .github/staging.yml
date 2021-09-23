@@ -5,8 +5,11 @@ name: CI
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+    tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ develop ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,7 +17,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: lireddit
-  TAG: latest
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -40,11 +42,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get the version
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -63,6 +69,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker pull ${{ steps.meta.outputs.tags }}
-            docker tag ${{ steps.meta.outputs.tags }} dokku/api:${{ env.TAG }}
+            docker tag ${{ steps.meta.outputs.tags }} dokku/api:${{ steps.vars.outputs.tag }}
             dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-            dokku tags:deploy api ${{ env.TAG }}
+            dokku tags:deploy api ${{ steps.vars.outputs.tags }}
