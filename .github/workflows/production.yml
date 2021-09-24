@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: productino-deployment
 
 # Controls when the workflow will run
 on:
@@ -41,21 +41,23 @@ jobs:
 
       - name: Get the version
         id: vars
-        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+        run: |
+          echo ::set-output name=image_version::$(echo ${GITHUB_REF:10})
+          echo ::set-output name=image_tag::$(echo ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${ GITHUB_REF:10 })
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.tag }}
+          images: ${{ steps.vars.outputs.image_tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
           file: ./server/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          #push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.vars.outputs.image_tag }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: SSH and deploy docker image
@@ -64,8 +66,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            docker pull ${{ steps.meta.outputs.tags }}
-            docker tag ${{ steps.meta.outputs.tags }} dokku/api:${{ steps.vars.outputs.tag }}
+            docker pull ${{ steps.vars.outputs.image_tag }}
+            docker tag ${{ steps.vars.outputs.image_tag }} dokku/api:${{ steps.vars.outputs.image_version }}
             dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-            dokku tags:deploy api ${{ steps.vars.outputs.tags }}
+            dokku tags:deploy api ${{ steps.vars.outputs.image_tag }}
