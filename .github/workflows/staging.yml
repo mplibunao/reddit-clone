@@ -16,9 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: lireddit
-  IMAGE_VERSION: latest
-  IMAGE_TAG: ghcr.io/lireddit:latest
+  IMAGE_NAME: ${{ github.repository }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -50,7 +48,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.IMAGE_TAG }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=true
+            prefix=
+            suffix=
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -58,7 +60,7 @@ jobs:
           context: .
           file: ./server/Dockerfile
           #push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.FULL_IMAGE }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: SSH and deploy docker image
@@ -69,7 +71,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           #passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            docker pull ${{ env.IMAGE_TAG }}
-            docker tag ${{ env.IMAGE_TAG }} dokku/api:${{ env.IMAGE_VERSION }}
+            docker pull ${{ steps.meta.outputs.tags }}
+            docker tag ${{ steps.meta.outputs.tags  }} dokku/api:latest
             dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-            dokku tags:deploy api ${{ env.IMAGE_VERSION }}
+            dokku tags:deploy api latest
