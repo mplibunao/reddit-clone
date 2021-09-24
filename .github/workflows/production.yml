@@ -32,34 +32,59 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build . --file ./server/Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
       
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+     - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Get the version
-        id: vars
+      #- name: Log into registry ${{ env.REGISTRY }}
+        #if: github.event_name != 'pull_request'
+        #uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        #with:
+          #registry: ${{ env.REGISTRY }}
+          #username: ${{ github.repository_owner }}
+          #password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        id: push_image
         run: |
-          echo ::set-output name=image_version::$(echo ${GITHUB_REF:10})
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          echo IMAGE_ID=$IMAGE_ID
+          echo ::set-output name=image_id::$(echo ${IMAGE_ID})
+          echo VERSION=$VERSION
+          echo ::set-output name=image_version::$(echo ${VERSION})
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with:
-          context: .
-          file: ./server/Dockerfile
-          #push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      #- name: Get the version
+        #id: vars
+        #run: |
+          #echo ::set-output name=image_version::$(echo ${GITHUB_REF:10})
+
+      #- name: Extract Docker metadata
+        #id: meta
+        #uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        #with:
+          #images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      #- name: Build and push Docker image
+        #uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        #with:
+          #context: .
+          #file: ./server/Dockerfile
+          ##push: ${{ github.event_name != 'pull_request' }}
+          #tags: ${{ steps.meta.outputs.tags }}
+          #labels: ${{ steps.meta.outputs.labels }}
 
       - name: SSH and deploy docker image
         uses: appleboy/ssh-action@master
@@ -69,7 +94,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           #passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            docker pull ${{ steps.meta.outputs.tags }}
-            docker tag ${{ steps.meta.outputs.tags }} dokku/api:${{ steps.vars.outputs.image_version }}
-            dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-            dokku tags:deploy api ${{ steps.vars.outputs.image_version }}
+            docker pull ${{ steps.push_image.outputs.image_id }}:${{ steps.push_image.outputs.image_version }}
+            docker tag ${{ steps.push_image.outputs.image_id }}:${{ steps.push_image.outputs.image_version }} dokku/api:${{ steps.push_image.outputs.image_version }}
+            dokku config:set api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            dokku tags:deploy api ${{ steps.push_image.outputs.image_version }}
