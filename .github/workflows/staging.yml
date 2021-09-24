@@ -71,7 +71,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           #passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            docker pull ${{ steps.meta.outputs.tags }} \
-            docker tag ${{ steps.meta.outputs.tags  }} dokku/api:latest \
-            dokku config:set api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
+            docker pull ${{ steps.meta.outputs.tags }}
+            docker tag ${{ steps.meta.outputs.tags  }} dokku/api:latest
+            dokku config:set api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
             dokku tags:deploy api latest
