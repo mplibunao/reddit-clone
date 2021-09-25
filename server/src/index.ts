@@ -41,7 +41,7 @@ const main = async () => {
 
   // Tell express that we have proxy sitting in front of api so
   // cookies / sessions work
-  app.set('proxy', 1)
+  app.set('trust proxy', 1)
   app.use(
     cors({
       origin: NEXT_JS_HOST,
