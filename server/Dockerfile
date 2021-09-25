@@ -21,15 +21,15 @@ COPY --chown=node:node ./server .
 
 # Put env files on ../ since app is bind mounted
 # thus will be overwritten by file in host (no .env file)
-WORKDIR /usr/src
+#WORKDIR /usr/src
 # moving to top one directory above doesn't work since dokku looks for .env
 # inside /app
 # might just remove this dotenvsafe from my setup
-COPY --chown=node:node .env.example ./
+#COPY --chown=node:node .env.example ./
 
-WORKDIR /usr/src/app
+#WORKDIR /usr/src/app
 
-COPY --chown=node:node .env.production ./.env
+#COPY --chown=node:node .env.production ./.env
 RUN yarn build
 # not sure but I think tsc needs to generate dist as root
 # issue is I want to run rimraf atleast once when starting in dev mode

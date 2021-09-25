@@ -14,11 +14,11 @@ import { Post, Updoot, User } from './entities'
 import path from 'path'
 import { createUserLoader } from './utils/createUserLoader'
 import { createUpdootLoader } from './utils/createUpdootLoader'
-import dotenvsafe from 'dotenv-safe'
+//import dotenvsafe from 'dotenv-safe'
 
-dotenvsafe.config({
-  example: '../.env.example',
-})
+//dotenvsafe.config({
+//example: '../.env.example',
+//})
 
 const main = async () => {
   const conn = await createConnection({
