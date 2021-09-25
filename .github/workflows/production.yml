@@ -96,5 +96,5 @@ jobs:
           script: |
             docker pull ${{ steps.push_image.outputs.image_id }}:${{ steps.push_image.outputs.image_version }}
             docker tag ${{ steps.push_image.outputs.image_id }}:${{ steps.push_image.outputs.image_version }} dokku/api:${{ steps.push_image.outputs.image_version }}
-            dokku config:set api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            dokku config:set --no-restart api NEXT_JS_HOST=${{ secrets.NEXT_JS_HOST }} SESSION_SECRET=${{ secrets.SESSION_SECRET }}
             dokku tags:deploy api ${{ steps.push_image.outputs.image_version }}
