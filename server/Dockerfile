@@ -1,7 +1,7 @@
 FROM node:14.16.1-alpine
 #ENV NODE_ENV $NODE_ENV
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # COPY is done by default with root
 # since we're using node user, it will not have enough permissions
@@ -35,7 +35,7 @@ RUN yarn build
 # issue is I want to run rimraf atleast once when starting in dev mode
 # but that fails because node doesn't have enough permissions for root
 # folders (dist)
-RUN chown -R node:node /usr/src/app/dist
+RUN chown -R node:node /app/dist
 #RUN chmod +x ./entrypoint
 
 # ARG ON TOP CAUSES CACHE MISSES FOR RUNS AFTER ARG CAUSE IT IMPLICITLY USES THE
