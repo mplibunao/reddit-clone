@@ -3,3 +3,4 @@ dist
 .env
 yarn-error.log
 db_data
+docker-compose.override.yml

@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# stop on first error
-set -e
-
-if [ $NODE_ENV = "development" ]
-  then cp /usr/src/.env.development /usr/src/.env 
-  else cp /usr/src/.env.production /usr/src/.env
-fi

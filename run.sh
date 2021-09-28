@@ -34,6 +34,11 @@ function up {
   exit $exit_code
 }
 
+function secret {
+  # Generate a random secret that can be used for your SECRET_KEY and more
+  docker-compose run --rm --no-deps server node -e "console.log(crypto.randomBytes(64).toString('hex'));"
+}
+
 function cmd {
   # run docker exec
   echo "docker-compose exec $@"

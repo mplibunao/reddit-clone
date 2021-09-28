@@ -1,9 +1,9 @@
-export const __prod__ = process.env.NODE_ENV === 'production'
-export const __dbUrl__ = process.env.DATABASE_URL
-export const __dbName__ = process.env.POSTGRES_DB || 'lireddit'
-export const __dbUser__ = process.env.POSTGRES_USER || 'postgres'
-export const __dbPassword__ = process.env.POSTGRES_PASSWORD || 'postgres'
+export const IS_PROD = process.env.NODE_ENV === 'production'
+export const DATABASE_URL = process.env.DATABASE_URL
 export const NEXT_JS_HOST = process.env.NEXT_JS_HOST
-export const REDIS_HOST = process.env.REDIS_HOST
+export const REDIS_URL = process.env.REDIS_URL
 export const COOKIE_NAME = 'qid'
 export const FORGET_PASSWORD_PREFIX = 'forget-password:'
+export const PORT = process.env.PORT
+export const SESSION_SECRET = process.env.SESSION_SECRET
+export const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL

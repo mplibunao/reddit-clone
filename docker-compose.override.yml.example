@@ -1,0 +1,39 @@
+services:
+  server:
+    volumes:
+      - server:/app
+    env_file:
+      - .env
+
+  web:
+    volumes:
+      - web:/app
+    env_file:
+      - .env
+
+  postgres:
+    env_file:
+      - .env
+
+  pgadmin:
+      image: dpage/pgadmin4
+      depends_on:
+        - postgres
+      ports:
+        - "5555:80"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: root
+      restart: unless-stopped
+
+volumes:
+  server:
+    driver_opts:
+      type: none
+      device: ${PWD}/server
+      o: bind
+  web:
+    driver_opts:
+      type: none
+      device: ${PWD}/web
+      o: bind

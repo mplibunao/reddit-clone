@@ -1,19 +1,25 @@
 import 'reflect-metadata'
 import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
-import { buildSchema } from 'type-graphql'
 import { PostResolver, UserResolver } from './resolvers'
 import Redis from 'ioredis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
-import { COOKIE_NAME, NEXT_JS_HOST, __dbUrl__, __prod__ } from './constants'
+import {
+  COOKIE_NAME,
+  NEXT_JS_HOST,
+  IS_PROD,
+  REDIS_URL,
+  PORT,
+  SESSION_SECRET,
+} from './constants'
 import { MyContext } from './types'
 import cors from 'cors'
 import { createConnection } from 'typeorm'
-import { Post, Updoot, User } from './entities'
-import path from 'path'
 import { createUserLoader } from './utils/createUserLoader'
 import { createUpdootLoader } from './utils/createUpdootLoader'
+import { ormconfig } from '../ormconfig'
+import { createSchema } from './utils/createSchema'
 //import dotenvsafe from 'dotenv-safe'
 
 //dotenvsafe.config({
@@ -21,14 +27,7 @@ import { createUpdootLoader } from './utils/createUpdootLoader'
 //})
 
 const main = async () => {
-  const conn = await createConnection({
-    type: 'postgres',
-    logging: true,
-    synchronize: false,
-    url: __dbUrl__,
-    entities: [Post, User, Updoot],
-    migrations: [path.join(__dirname, './migrations/*')],
-  })
+  const conn = await createConnection(ormconfig())
 
   await conn.runMigrations()
 
@@ -37,7 +36,7 @@ const main = async () => {
   const app = express()
 
   const RedisStore = connectRedis(session)
-  const redis = new Redis(process.env.REDIS_URL)
+  const redis = new Redis(REDIS_URL)
 
   // Tell express that we have proxy sitting in front of api so
   // cookies / sessions work
@@ -60,20 +59,17 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
         sameSite: 'lax', // csrf
-        secure: __prod__, // cookie only works in https
-        domain: __prod__ ? '.mplibunao.me' : undefined,
+        secure: IS_PROD, // cookie only works in https
+        domain: IS_PROD ? '.mplibunao.me' : undefined,
       },
       saveUninitialized: false,
-      secret: process.env.SESSION_SECRET,
+      secret: SESSION_SECRET,
       resave: false,
     })
   )
 
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [PostResolver, UserResolver],
-      validate: false,
-    }),
+    schema: await createSchema(),
     context: ({ req, res }): MyContext => ({
       req,
       res,
@@ -91,7 +87,7 @@ const main = async () => {
     cors: false,
   })
 
-  app.listen(parseInt(process.env.PORT), () => {
+  app.listen(parseInt(PORT), () => {
     console.log('server started on localhost:4000')
   })
 }
