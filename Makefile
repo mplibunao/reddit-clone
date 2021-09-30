@@ -59,7 +59,7 @@ next.exec := $(exec) $(next_app)
 setup: ## First time setup
 	docker-compose build
 	make migrate.create
-up: node.yarn next.yarn ## Runs all services
+up: ## Runs all services
 	$(docker.up)
 up.build: ## Builds containers then runs it
 	$(docker.up) --build 

@@ -1,23 +1,22 @@
 import { Box, Heading } from '@chakra-ui/react'
-import { withUrqlClient } from 'next-urql'
 import React from 'react'
 import EditDeletePostButtons from '../../components/EditDeletePostButtons'
 import Layout from '../../components/Layout'
 import { usePostQuery } from '../../generated/graphql'
-import { createUrqlClient } from '../../utils'
 import { getRouteParams } from '../../utils/getRouteParams'
+import { withApollo } from '../../utils/withApollo'
 
 export interface PostProps {}
 
 export const Post = (_props: PostProps): JSX.Element => {
   const id = getRouteParams('id')
-  const [{ data, fetching }] = usePostQuery({
+  const { data, loading } = usePostQuery({
     variables: {
       id,
     },
   })
 
-  if (fetching) {
+  if (loading) {
     return (
       <Layout>
         <div>loading...</div>
@@ -45,4 +44,4 @@ export const Post = (_props: PostProps): JSX.Element => {
   )
 }
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post)
+export default withApollo({ ssr: true })(Post)

@@ -1,7 +1,13 @@
+import { ApolloCache } from '@apollo/client'
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { Flex, IconButton } from '@chakra-ui/react'
 import React, { useState } from 'react'
-import { PostSnippetFragment, useVoteMutation } from '../generated/graphql'
+import { gql } from 'urql'
+import {
+  PostSnippetFragment,
+  useVoteMutation,
+  VoteMutation,
+} from '../generated/graphql'
 
 export interface UpdootSectionProps {
   post: PostSnippetFragment
@@ -9,12 +15,48 @@ export interface UpdootSectionProps {
   //type if you don't have a fragment
 }
 
+const updateAfterVote = (
+  value: number,
+  postId: string,
+  cache: ApolloCache<VoteMutation>
+) => {
+  const data = cache.readFragment({
+    id: `Post:${postId}`,
+    fragment: gql`
+      fragment _ on Post {
+        id
+        points
+        voteStatus
+      }
+    `,
+  })
+
+  if (data) {
+    if (data.voteStatus === value) {
+      return
+    }
+    const newPoints = data.points + (!data.voteStatus ? 1 : 2) * value
+
+    cache.writeFragment({
+      id: `Post:${postId}`,
+      fragment: gql`
+        fragment __ on Post {
+          id
+          points
+          voteStatus
+        }
+      `,
+      data: { points: newPoints, voteStatus: value },
+    })
+  }
+}
+
 export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
   const [loadingState, setLoadingState] =
     useState<'updoot-loading' | 'downdoot-loading' | 'not-loading'>(
       'not-loading'
     )
-  const [, vote] = useVoteMutation()
+  const [vote] = useVoteMutation()
 
   return (
     <Flex direction='column' justify='center' align='center' mr={4}>
@@ -29,8 +71,11 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
 
           setLoadingState('updoot-loading')
           await vote({
-            postId: post.id,
-            value: 1,
+            variables: {
+              postId: post.id,
+              value: 1,
+            },
+            update: (cache) => updateAfterVote(1, post.id, cache),
           })
           setLoadingState('not-loading')
         }}
@@ -51,8 +96,11 @@ export const UpdootSection = ({ post }: UpdootSectionProps): JSX.Element => {
 
           setLoadingState('downdoot-loading')
           await vote({
-            value: -1,
-            postId: post.id,
+            variables: {
+              value: -1,
+              postId: post.id,
+            },
+            update: (cache) => updateAfterVote(-1, post.id, cache),
           })
           setLoadingState('not-loading')
         }}
