@@ -20,161 +20,58 @@ $(shell chmod +x ./run.sh)
 TAIL ?= all
 ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
-# Commands
+# Docker commands
 exec := docker-compose exec
 run := ./run.sh run
-run-service-ports := ./run.sh run-service-ports
 logs := docker-compose logs --tail=$(TAIL)
 docker.up := ./run.sh up
 
-
-migration := yarn run mikro-orm
-yarn.add := yarn add $(ARGS)
-yarn.add.dev := yarn add -D $(ARGS)
-yarn.remove := yarn remove $(ARGS)
-yarn.remove.dev := yarn remove $(ARGS)
-yarn.prettier.check := yarn prettier:check
-yarn.prettier.fix := yarn prettier:fix
-yarn.lint.check := yarn lint:check
-yarn.lint.fix := yarn lint:fix
-yarn.audit := yarn audit
-yarn.update := yarn upgrade-interactive --latest
-yarn.clean := yarn run clean
-yarn.gen := yarn gen
-
-# Services
-node_server := server
-next_app := web
-postgres := postgres
-
 # aliases
-node := $(run) $(node_server)
-node.exec := $(exec) $(node_server)
-db := $(run) $(postgres)
-db.exec := $(exec) $(postgres)
-next := $(run) $(next_app)
-next.exec := $(exec) $(next_app)
+api := $(run) api
+api.exec := $(exec) api
+db := $(run) postgres
+db.exec := $(exec) postgres
+web := $(run) web
+web.exec := $(exec) web
 
 # Targets
-setup: ## First time setup
-	docker-compose build
-	make migrate.create
+setup: api.yarn web.yarn ## Initial setup
+	./run.sh up --build
+	
 up: ## Runs all services
 	$(docker.up)
 up.build: ## Builds containers then runs it
 	$(docker.up) --build 
 
-# Node server
+# API
 gen.env.types: ## Generates .env.example and types for env
 	npx gen-env-types .env -o server/src/env.d.ts -e .
-node.build: ## Build docker image for server
-	docker build -t mplibunao/lireddit:test -f ./server/Dockerfile .
-node.dev: node.yarn ## Runs node server in dev mode
-	$(node) yarn dev
-node.yarn: ## Install packages
-	$(node) yarn
-node.logs: ## Shows node server logs
-	$(logs) $(node_server)
-node.sh: ## Run shell
-	$(node) sh
-node.add: ## Add new dependencies
-	$(node) $(yarn.add)
-node.add.dev: ## Add new dev dependencies
-	$(node) $(yarn.add.dev)
-node.remove: ## Remove dependencies
-	$(node) $(yarn.remove)
-node.remove.dev: ## Remove dev dependencies
-	$(node) $(yarn.remove.dev)
-node.prettier: ## Checks for formatting errors
-	$(node) $(yarn.prettier.check)
-node.prettier.fix: ## Fixes formatting errors
-	$(node) $(yarn.prettier.fix)
-node.lint: ## Check for eslint errors
-	$(node) $(yarn.lint.check)
-node.lint.fix: ## Fixes eslint errors
-	$(node) $(yarn.lint.fix)
-node.audit: ## Checks for known security issues with installed packages
-	$(node) $(yarn.audit)
-node.update: ## Upgrade packages interactively
-	$(node) $(yarn.update)
-node.clean: ## Clean dist directory
-	$(node) $(yarn.clean)
+api.logs: ## Shows node server logs
+	$(logs) $(api)
+api.sh: ## Run shell
+	$(api) sh
+api.sh.exec: ## Runs shell inside running container
+	$(api.exec) sh
+api.yarn: ## Installs node dependencies for api
+  ./run.sh run web yarn
+
 migrate.create: ## Creates new migration
-	$(node) $(migration) migration:create
+	$(api) $(migration) migration:create
 migrate.reset: ## Reset db
-	$(node) $(migration) migration:down --to 0
+	$(api) $(migration) migration:down --to 0
 migrate.drop: ## Drop schema
-	$(node) $(migration) schema:drop --drop-db --dump --drop-migrations-table
+	$(api) $(migration) schema:drop --drop-db --dump --drop-migrations-table
 migrate.sync: ## Runs schema syncronization
-	$(node) $(migration) schema:update --run --dump
+	$(api) $(migration) schema:update --run --dump
 
-## Node exec commands
-node.sh.e: ## Runs shell
-	$(node.exec) sh
-node.add.e: ## Add new dependencies
-	$(node.exec) $(yarn.add)
-node.add.dev.e: ## Add new dev dependencies
-	$(node.exec) $(yarn.add.dev)
-node.prettier.e: ## Checks for formatting errors
-	$(node.exec) $(yarn.prettier.check)
-node.prettier.fix.e: ## Fixes formatting errors
-	$(node.exec) $(yarn.prettier.fix)
-node.lint.e: ## Check for eslint errors
-	$(node.exec) $(yarn.lint.check)
-node.lint.fix.e: ## Fixes eslint errors
-	$(node.exec) $(yarn.lint.fix)
-node.audit.e: ## Checks for known security issues with installed packages
-	$(node.exec) $(yarn.audit)
-
-# Next js app
-next.dev: ## Start next js 
-	$(next) yarn dev
-next.yarn: ## Install packages
-	$(next) yarn
-next.logs: ## Shows node server logs
-	$(logs) $(next_app)
-next.shell: ## Run shell
-	$(next) sh
-next.add: ## Add new dependencies
-	$(next) $(yarn.add)
-next.add.dev: ## Add new dev dependencies
-	$(next) $(yarn.add.dev)
-next.prettier: ## Checks for formatting errors
-	$(next) $(yarn.prettier.check)
-next.prettier.fix: ## Fixes formatting errors
-	$(next) $(yarn.prettier.fix)
-next.lint: ## Check for eslint errors
-	$(next) $(yarn.lint.check)
-next.lint.fix: ## Fixes eslint errors
-	$(next) $(yarn.lint.fix)
-next.audit: ## Checks for known security issues with installed packages
-	$(next) $(yarn.audit)
-next.update: ## Upgrade packages interactively
-	$(next) $(yarn.update)
-next.gen: ## Generates graphql types and operations
-	$(next) $(yarn.gen)
-
-# Next js exec commands
-next.shell.e: ## Run shell
-	$(next.exec) sh
-next.add.e: ## Add new dependencies
-	$(next.exec) $(yarn.add)
-next.add.dev.e: ## Add new dev dependencies
-	$(next.exec) $(yarn.add.dev)
-next.prettier.e: ## Checks for formatting errors
-	$(next.exec) $(yarn.prettier.check)
-next.prettier.fix.e: ## Fixes formatting errors
-	$(next.exec) $(yarn.prettier.fix)
-next.lint.e: ## Check for eslint errors
-	$(next.exec) $(yarn.lint.check)
-next.lint.fix.e: ## Fixes eslint errors
-	$(next.exec) $(yarn.lint.fix)
-next.audit.e: ## Checks for known security issues with installed packages
-	$(next.exec) $(yarn.audit)
-next.update.e: ## Upgrade packages interactively
-	$(next.exec) $(yarn.update)
-next.gen.e: ## Generates graphql types and operations
-	$(next.exec) $(yarn.gen)
+web.logs: ## Shows api server logs
+	$(logs) $(web_app)
+web.shell: ## Run shell
+	$(web) sh
+web.shell.exec: ## Run shell inside running container
+	$(web.exec) sh
+web.yarn: ## Installs node dependencies for web
+	./run.sh run web yarn
 
 # DB 
 db.psql.e: ## Logs into psql using docker exec
@@ -183,7 +80,3 @@ db.psql: ## Logs into psql using docker run
 	$(db) psql -U postgres
 db.logs: ## Shows postgres logs
 	$(logs) $(postgres)
-db.createdb: ## Create new database
-	$(db) createdb $(ARGS)
-db.createdb.e: ## Create new database using docker exec
-	$(db.exec) createdb $(ARGS)

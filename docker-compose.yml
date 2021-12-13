@@ -1,5 +1,5 @@
 services:
-  server:
+  api:
     build:
       context: ./server
       target: development
@@ -17,7 +17,7 @@ services:
       - "3000:3000"
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     depends_on:
-      - server
+      - api
 
   postgres:
     build: ./db

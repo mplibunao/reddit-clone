@@ -5,12 +5,14 @@
   "scripts": {
     "start": "yarn clean && tsc && concurrently \"tsc -w\" \"nodemon dist/src/index.js\"",
     "dev": "nodemon --exec ts-node src/index.ts",
+    "clean": "rimraf dist",
+    "build": "rimraf dist && tsc",
     "lint:check": "yarn eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prettier:check": "prettier --list-different 'src/**/*.{js,jsx,ts,tsx}'",
     "prettier:fix": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
-    "clean": "rimraf dist",
-    "build": "rimraf dist && tsc"
+    "audit": "yarn audit",
+    "update": "yarn upgrade-interactive --latest"
   },
   "license": "MIT",
   "devDependencies": {
@@ -70,5 +72,8 @@
       "./src/mikro-orm.config.ts",
       "./dist/mikro-orm.config.js"
     ]
+  },
+  "volta": {
+    "node": "14.16.1"
   }
 }

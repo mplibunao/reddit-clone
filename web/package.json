@@ -5,11 +5,13 @@
     "dev": "concurrently \"next dev\" \"yarn gen --watch\"",
     "build": "next build",
     "start": "next start",
+    "gen": "graphql-codegen --config codegen.yml",
     "lint:check": "yarn eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prettier:check": "prettier --list-different 'src/**/*.{js,jsx,ts,tsx}'",
     "prettier:fix": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
-    "gen": "graphql-codegen --config codegen.yml"
+    "audit": "yarn audit",
+    "update": "yarn upgrade-interactive --latest"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.0",
@@ -45,5 +47,8 @@
     "prettier": "^2.3.0",
     "typescript": "^4.3.2",
     "vercel": "^23.1.2"
+  },
+  "volta": {
+    "node": "14.16.1"
   }
 }

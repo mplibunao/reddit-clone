@@ -1,16 +1,6 @@
 #!/bin/bash
 # Usage: run.sh SERVICE [CMD...]
-
-function run-service-ports {
-  # run container using docker run then docker-compose down upon exiting
-  # Runs on specified ports
-  echo "docker-compose run --rm --service-ports $@"
-  docker-compose run --rm --service-ports "$@"
-  exit_code=$?
-  echo "docker-compose down"
-  docker-compose down
-  exit $exit_code
-}
+source ./api.sh
 
 function run {
   # run container using docker run then docker-compose down upon exiting
@@ -39,10 +29,15 @@ function secret {
   docker-compose run --rm --no-deps server node -e "console.log(crypto.randomBytes(64).toString('hex'));"
 }
 
-function cmd {
+function exec {
   # run docker exec
   echo "docker-compose exec $@"
   docker-compose exec ${@}
+}
+
+function api {
+  pwd
+  echo "api is here"
 }
 
 
