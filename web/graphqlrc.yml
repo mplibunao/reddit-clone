@@ -9,3 +9,4 @@ extensions:
           - typescript-operations
           - urql-introspection
           - typescript-urql
+          - typescript-urql-graphcache
