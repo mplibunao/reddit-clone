@@ -10,6 +10,7 @@ help:
 	@echo "${CYAN}.e (exec) ${NO_COLOR}- allows you to run a one-off commands w/o turning off the server using docker-compose exec"
 	@echo "${CYAN}./run.sh cmd <container-name> <commands> ${NO_COLOR} - Use when you need to run commands w/ multiple args or flags (uses docker-compose exec)"
 	@echo "Makefile targets:"
+	#@grep -E '^[a-zA-Z_-].*?: .*?## .*$$' Makefile | sed 's#\\:#:#g' 
 	@grep -E '^[a-zA-Z_-].*?: .*?## .*$$' Makefile | sed 's#\\:#:#g' | awk 'BEGIN {FS = ": .*?## "}; {printf "${CYAN}  %${SPACING}${NO_COLOR} %s\n", $$1, $$2}'
 	@echo
 
@@ -52,8 +53,8 @@ api.sh: ## Run shell
 	$(api) sh
 api.sh.exec: ## Runs shell inside running container
 	$(api.exec) sh
-api.yarn: ## Installs node dependencies for api
-  ./run.sh run web yarn
+#api.yarn: ## Installs node dependencies for api
+  #./run.sh run web yarn
 
 migrate.create: ## Creates new migration
 	$(api) $(migration) migration:create

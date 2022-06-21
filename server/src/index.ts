@@ -1,26 +1,25 @@
-import 'reflect-metadata'
-import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
-import { PostResolver, UserResolver } from './resolvers'
-import Redis from 'ioredis'
-import session from 'express-session'
 import connectRedis from 'connect-redis'
+import cors from 'cors'
+import dotenvsafe from 'dotenv-safe'
+import express from 'express'
+import session from 'express-session'
+import Redis from 'ioredis'
+import 'reflect-metadata'
+import { createConnection } from 'typeorm'
+import { ormconfig } from '../ormconfig'
 import {
   COOKIE_NAME,
-  NEXT_JS_HOST,
   IS_PROD,
-  REDIS_URL,
+  NEXT_JS_HOST,
   PORT,
+  REDIS_URL,
   SESSION_SECRET,
 } from './constants'
 import { MyContext } from './types'
-import cors from 'cors'
-import { createConnection } from 'typeorm'
-import { createUserLoader } from './utils/createUserLoader'
-import { createUpdootLoader } from './utils/createUpdootLoader'
-import { ormconfig } from '../ormconfig'
 import { createSchema } from './utils/createSchema'
-import dotenvsafe from 'dotenv-safe'
+import { createUpdootLoader } from './utils/createUpdootLoader'
+import { createUserLoader } from './utils/createUserLoader'
 
 dotenvsafe.config({
   example: '../.env.example',
@@ -53,7 +52,8 @@ const main = async () => {
       name: COOKIE_NAME,
       store: new RedisStore({
         client: redis,
-        disableTouch: true,
+        disableTouch: true, // Disables re-saving and resetting the TTL when using touch
+        // similar to resave. one should be false if you are not using 10 years as maxAge so doesn't get logged out
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
@@ -62,9 +62,9 @@ const main = async () => {
         secure: IS_PROD, // cookie only works in https
         domain: IS_PROD ? '.mplibunao.me' : undefined,
       },
-      saveUninitialized: false,
+      saveUninitialized: false, // forces a new session to be saved. False reduces server store storage
       secret: SESSION_SECRET,
-      resave: false,
+      resave: false, // session is resaved against the server store on each request, even if the session wasn't modified
     })
   )
 
