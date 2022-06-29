@@ -11,6 +11,7 @@ import { withUrqlClient } from 'next-urql'
 import NextLink from 'next/link'
 
 export const Login = (): JSX.Element => {
+  const [] = React.useState()
   const [_, login] = useLoginMutation()
   const router = useRouter()
 
